@@ -285,6 +285,10 @@
                     <td><input type="checkbox" id="showSk" class="checkbox"/></td>
                 </tr>
                 <tr>
+                    <td><label for="clearBeforeDrawing">Clear before drawing</label></td>
+                    <td><input type="checkbox" id="clearBeforeDrawing" class="checkbox"/></td>
+                </tr>
+                <tr>
                     <td><label for="step">Drawing step</label></td>
                     <td><input type="number" id="step" style="width: 60px" value="0.005" step="0.001" max="0.5"
                                min="0.001"></td>
@@ -315,11 +319,21 @@
                     </td>
                 </tr>
                 <tr>
-                    <td>
+                    <td style="padding-bottom: 10px; margin-bottom: 10px;">
                         <button type="button" class="btn btn-danger" onclick="stopDrawing()">Stop</button>
                     </td>
-                    <td>
+                    <td style="padding-bottom: 10px; margin-bottom: 10px;">
                         <button type="button" class="btn btn-info" onclick="saveConfig()">Save Config</button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-danger" onclick="clear()">Clear</button>
+                    </td>
+                    <td>
+                        <button title="Clear the circles and the skeleton, keeping your pattern" type="button" class="btn btn-info" onclick="clearBottom()">
+                            Clear circles
+                        </button>
                     </td>
                 </tr>
                 <script>
@@ -342,6 +356,7 @@
     var innerCircleParam = document.getElementById('innerRadius');
     var outerCircleCheck = document.getElementById('showOC');
     var innerCircleCheck = document.getElementById('showIC');
+    var clearBeforeDrawingCheck = document.getElementById('clearBeforeDrawing');
     var drawingStepParam = document.getElementById('step');
     var drawingDelayParam = document.getElementById('delay');
     var journeyParam = document.getElementById('ratio');
@@ -381,6 +396,7 @@
             showOuterCircle: outerCircleCheck.checked,
             showInnerCircle: innerCircleCheck.checked,
             showSkeleton: skeletonCheck.checked,
+            clearBeforeDrawing: clearBeforeDrawingCheck.checked,
             drawingStep: +drawingStepParam.value,
             drawingDelay: +drawingDelayParam.value,
             journeyRatio: +journeyParam.value,
@@ -404,6 +420,7 @@
             outerCircleCheck.checked = obj.showOuterCircle === undefined ? true : obj.showOuterCircle;
             innerCircleCheck.checked = obj.showInnerCircle === undefined ? false : obj.showInnerCircle;
             skeletonCheck.checked = obj.showSkeleton === undefined ? false : obj.showSkeleton;
+            clearBeforeDrawingCheck.checked = obj.clearBeforeDrawing === undefined ? true : obj.clearBeforeDrawing;
             drawingStepParam.value = obj.drawingStep === undefined ? 0.005 : obj.drawingStep;
             drawingDelayParam.value = obj.drawingDelay === undefined ? 2 : obj.drawingDelay;
             journeyParam.value = obj.journeyRatio === undefined ? 1 : obj.journeyRatio;
@@ -463,8 +480,7 @@
         var bottomCanvas = document.getElementById('canvas-bottom');
         var bottomCxt = bottomCanvas.getContext('2d');
 
-        topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
-        bottomCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+        clear();
 
         var outerCircle = new Circle(canvasWidth / 2, canvasHeight / 2, +outerCircleParam.value);
         outerCircle.draw(bottomCxt);
@@ -473,6 +489,23 @@
         ruler.showCircle = true;
         ruler.showSkeleton = true;
         ruler.draw(topCxt, bottomCxt);
+    }
+
+    function clear(){
+        clearTop();
+        clearBottom();
+    }
+
+    function clearTop(){
+        var topCanvas = document.getElementById('canvas-top');
+        var topCxt = topCanvas.getContext('2d');
+        topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+    }
+
+    function clearBottom(){
+        var bottomCanvas = document.getElementById('canvas-bottom');
+        var bottomCxt = bottomCanvas.getContext('2d');
+        bottomCxt.clearRect(0, 0, bottomCanvas.width, bottomCanvas.height);
     }
 
     /**
@@ -488,8 +521,8 @@
         var bottomCanvas = document.getElementById('canvas-bottom');
         var bottomCxt = bottomCanvas.getContext('2d');
 
-        topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
-        bottomCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+        if (clearBeforeDrawingCheck.checked)
+            clear();
 
         var outerCircle = new Circle(canvasWidth / 2, canvasHeight / 2, outerCircleRadius);
         if (outerCircleCheck.checked)
