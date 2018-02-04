@@ -141,10 +141,9 @@
                 </tr>
                 <script>
                     function removeDot(btn, id) {
-                        // dots.splice(parseInt(id.split('-')[1]), 1);
                         delete dots[id];
-                        $(btn.parentNode.parentNode).hide(300, function () {
-                            $(btn.parentNode.parentNode).remove();
+                        $('#'+id).hide(300, function () {
+                            $('#'+id).remove();
                         });
                         saveConfigToBrowser();
                     }
@@ -181,13 +180,13 @@
                         );
                     }
 
-                    function preModify(tr){
-                        var dot = dots[tr.id];
+                    function preModify(td){
+                        var dot = dots[td.parentNode.id];
                         mDotSize.value = dot.size;
                         mDotColor.value = dot.color;
                         mDotDistance.value = dot.distance;
                         mDotRot.value = Math.round(dot.rotOffset / Math.PI * 180);
-                        mDotID.value = tr.id;
+                        mDotID.value = td.parentNode.id;
                     }
 
                     function postModify(){
@@ -364,15 +363,15 @@
     var mDotID = document.getElementById('m-dotID');
 
     window.onload = function (ev) {
-        saveConfigToBrowser();
+        parseConfigJSON(localStorage.getItem('cache'));
     };
 
     window.onchange = function (ev) {
-        localStorage.setItem('cache', getConfigJSON());
+        saveConfigToBrowser();
     };
 
     function saveConfigToBrowser(){
-        parseConfigJSON(localStorage.getItem('cache'));
+        localStorage.setItem('cache', getConfigJSON());
     }
 
     function getConfigJSON() {
@@ -665,5 +664,12 @@
         }
     }
 </script>
+<div style="width: 500px; margin: auto auto">
+    <span style="font-size:18px;">
+        Developed by <a href="https://github.com/hanzhi713" target="_blank">Hanzhi Zhou</a>.
+        Click <a href="docs/help.html" target="_blank">here</a> to see instructions.
+    </span>
+</div>
+
 </body>
 </html>
