@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <style>
+        .checkbox {
+            width: 15px;
+            height: 15px;
+        }
+
+        .tadjusted tr td {
+            height: 20px;
+        }
+    </style>
+</head>
+<body style="margin: auto auto; width: 1024px">
+<table>
+    <tr>
+        <td style="text-align: center">
+            <p>
+            <h3>Canvas</h3></p>
+            <div style="position: relative; width: 640px; height: 640px">
+                <canvas id="canvas-top" width="640px" height="640px"
+                        style="left:0;position: absolute;z-index: 1"></canvas>
+                <canvas id="canvas-bottom" width="640px" height="640px"
+                        style="left: 0;position: absolute;z-index: 0"></canvas>
+            </div>
+        </td>
+        <td style="width: 300px;vertical-align: top;text-align: center">
+            <p>
+            <h3>Settings</h3></p>
+            <table class="table table-striped table-sm" style="text-align: left;" id="settings">
+                <tr>
+                    <td><label for="mcRadius">Mother Circle Radius</label></td>
+                    <td>
+                        <input type="number" id="mcRadius" style="width: 50px" value="300" step="1" max="1000"
+                               min="100">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="subRadius">Subcircle Radius</label></td>
+                    <td>
+                        <input type="number" id="subRadius" style="width: 50px" value="120" step="1" max="800" min="10">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="showMC">Show Mother Circle</label></td>
+                    <td><input type="checkbox" id="showMC" class="checkbox" checked/></td>
+                </tr>
+                <tr>
+                    <td><label for="showSC">Show Subcircle</label></td>
+                    <td><input type="checkbox" id="showSC" class="checkbox"/></td>
+                </tr>
+                <tr>
+                    <td><label for="showSk">Show skeleton</label></td>
+                    <td><input type="checkbox" id="showSk" class="checkbox"/></td>
+                </tr>
+                <tr>
+                    <td><label for="delay">Drawing delay</label></td>
+                    <td><input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0"></td>
+                </tr>
+                <tr style="text-align: center">
+                    <td colspan="2"><h5>Dots</h5></td>
+                </tr>
+                <tr>
+                    <td><label for="dotSize">Size</label></td>
+                    <td>
+                        <input type="number" id="dotSize" style="width: 50px" value="6" step="1" max="200" min="1">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="dotColor">Color</label></td>
+                    <td><input type="color" id="dotColor"/></td>
+                </tr>
+                <tr>
+                    <td><label for="dotDistance">Distance to center</label></td>
+                    <td><input type="number" id="dotDistance" style="width: 50px" value="80" step="1" max="800" min="1">
+                    </td>
+                </tr>
+                <tr>
+                    <td><label for="dotRotOffset">Rotation Offset</label></td>
+                    <td><input type="number" id="dotRotOffset" style="width: 50px" value="0" step="1" max="360" min="0">°
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center">
+                        <button type="button" class="btn btn-primary" onclick="addDot()">Add a Dot</button>&nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn btn-secondary" onclick="randomDot()">Random</button>&nbsp;&nbsp;&nbsp;
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center"><h5>Dot List</h5></td>
+                </tr>
+                <script>
+                    function removeDot(btn, id) {
+                        // dots.splice(parseInt(id.split('-')[1]), 1);
+                        delete dots[id];
+                        $(btn.parentNode.parentNode).hide(500, function () {
+                            $(btn).remove();
+                        })
+                    }
+
+                    function addDot() {
+                        var currentTime = (new Date()).valueOf().toString();
+                        var dotSize = $('#dotSize').val();
+                        var dotColor = $('#dotColor').val();
+                        var dotDist = $('#dotDistance').val();
+                        var dotRot = $('#dotRotOffset').val();
+                        dots[currentTime] = new Dot(dotSize, dotColor, dotDist, dotRot);
+                        $('#settings').append("<tr id=\"" + currentTime + "\">" +
+                            "                    <td>Size: " + dotSize + "&nbsp;&nbsp;Color:" +
+                            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
+                            "                        Distance: " + dotDist + "&nbsp;&nbsp;Rotation: " + dotRot +
+                            "                    </td>" +
+                            "                    <td>" +
+                            "                        <button type=\"button\" class=\"close\" aria-label=\"Close\" onclick=\"removeDot(this, '" + currentTime + "')\">" +
+                            "                            <span aria-hidden=\"true\">&times;</span>" +
+                            "                        </button>" +
+                            "                    </td>" +
+                            "                </tr>"
+                        );
+                    }
+
+                    function randomDot() {
+                        var currentTime = (new Date()).valueOf().toString();
+                        var dotSize = Math.round(Math.random() * 10);
+                        var dotColor = '#' + (Math.round(Math.random() * 256 * 256 * 256)).toString(16);
+                        var dotDist = Math.round(Math.random() * +subCircleParam.value - 1);
+                        var dotRot = Math.round(Math.random() * 360);
+                        dots[currentTime] = new Dot(dotSize, dotColor, dotDist, dotRot);
+                        $('#settings').append("<tr id=\"" + currentTime + "\">" +
+                            "                    <td>Size: " + dotSize + "&nbsp;&nbsp;Color:" +
+                            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
+                            "                        Distance: " + dotDist + "&nbsp;&nbsp;Rotation: " + dotRot +
+                            "                    </td>" +
+                            "                    <td>" +
+                            "                        <button type=\"button\" class=\"close\" aria-label=\"Close\" onclick=\"removeDot(this, '" + currentTime + "')\">" +
+                            "                            <span aria-hidden=\"true\">&times;</span>" +
+                            "                        </button>" +
+                            "                    </td>" +
+                            "                </tr>"
+                        );
+                    }
+                </script>
+                <tr id="dot-0">
+                    <td>Size: 3&nbsp;&nbsp;Color:
+                        <span style="width:15px;height: 15px;background-color: aqua;display: inline-block"></span><br/>
+                        Distance: 80&nbsp;&nbsp;Rotation: 0
+                    </td>
+                    <td>
+                        <button type="button" class="close" aria-label="Close" onclick="removeDot(this, 'dot-0')">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </td>
+                </tr>
+            </table>
+            <button class="btn btn-warning" onclick="caller()">Draw on Canvas</button>
+            <button type="button" class="btn btn-info" onclick="previewRuler()">Preview Ruler</button>
+        </td>
+    </tr>
+</table>
+
+<script>
+    var dots = {'dot-0': new Dot(3, '#00FFFF', 80, 0)};
+    var motherCircleParam = document.getElementById('mcRadius');
+    var subCircleParam = document.getElementById('subRadius');
+    var motherCircleCheck = document.getElementById('showMC');
+    var subCircleCheck = document.getElementById('showSC');
+    var drawingParam = document.getElementById('delay');
+    var skeletonCheck = document.getElementById('showSk');
+
+    function getDotArray() {
+        var dotArray = [];
+        for (var key in dots) {
+            dotArray.push(dots[key]);
+        }
+        return dotArray;
+    }
+
+    function caller() {
+        var motherCircleRadius = +motherCircleParam.value;
+        var subCircleRadius = +subCircleParam.value;
+        draw(motherCircleRadius, new Ruler(new Circle(0, 0, subCircleRadius), getDotArray()));
+    }
+
+    function previewRuler() {
+        var topCanvas = document.getElementById('canvas-top');
+        var canvasWidth = topCanvas.width;
+        var canvasHeight = topCanvas.height;
+
+        var topCxt = topCanvas.getContext('2d');
+        var bottomCanvas = document.getElementById('canvas-bottom');
+        var bottomCxt = bottomCanvas.getContext('2d');
+
+        topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+        bottomCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+
+        var motherCircle = new Circle(canvasWidth / 2, canvasHeight / 2, +motherCircleParam.value);
+        motherCircle.draw(bottomCxt);
+
+        var ruler = new Ruler(new Circle(motherCircle.x, motherCircle.y + motherCircle.radius - +subCircleParam.value, +subCircleParam.value), getDotArray());
+        ruler.showCircle = true;
+        ruler.showSkeleton = true;
+        ruler.draw(topCxt, bottomCxt);
+    }
+
+    function draw(motherCircleRadius, ruler) {
+        var topCanvas = document.getElementById('canvas-top');
+        var canvasWidth = topCanvas.width;
+        var canvasHeight = topCanvas.height;
+
+        var topCxt = topCanvas.getContext('2d');
+        var bottomCanvas = document.getElementById('canvas-bottom');
+        var bottomCxt = bottomCanvas.getContext('2d');
+
+        topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+        bottomCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+
+        var motherCircle = new Circle(canvasWidth / 2, canvasHeight / 2, motherCircleRadius);
+        if (motherCircleCheck.checked)
+            motherCircle.draw(bottomCxt);
+
+        ruler.circle.moveTo(motherCircle.x, motherCircle.y + motherCircle.radius - ruler.circle.radius);
+        ruler.showCircle = subCircleCheck.checked;
+        ruler.showSkeleton = skeletonCheck.checked;
+
+        var road = motherCircle.radius - ruler.circle.radius;
+        var interval = +drawingParam.value;
+        var subCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
+
+        for (var i = Math.PI * 1.5, delay = 0; i < Math.PI * (1.5 + 2 * lcm(motherCircleRadius, ruler.circle.radius) / motherCircleRadius); i += 0.005, delay += interval) {
+            (function (i, delay) {
+                    setTimeout(function () {
+                        ruler.erase(bottomCxt);
+                        if (motherCircleCheck.checked)
+                            motherCircle.draw(bottomCxt);
+                        var newPos = rad2cor(motherCircle.x, motherCircle.y, road, i);
+                        ruler.moveTo(newPos[0], newPos[1]);
+                        ruler.angle = (i - Math.PI * 1.5) * motherCircleRadius / subCirclePerimeter * 2 * Math.PI;
+                        ruler.draw(topCxt, bottomCxt);
+                    }, delay);
+                }
+            )(i, delay)
+        }
+
+    }
+
+    function lcm(x, y) {
+        var a = x, b = y;
+        while (a % b !== 0) {
+            var c = a % b;
+            a = b;
+            b = c;
+        }
+        return x * y / b
+    }
+
+
+    function rad2cor(x, y, radius, rad) {
+        return [x + radius * Math.cos(rad), y - radius * Math.sin(rad)];
+    }
+
+    /**
+     * @constructor
+     * @param {Circle} circle
+     * @param {Array} dots
+     * */
+    function Ruler(circle, dots) {
+        this.circle = circle;
+        this.dots = dots;
+        this.angle = 0;
+        this.showCircle = true;
+        this.showSkeleton = true;
+        this.draw = function (topCxt, bottomCxt) {
+            this.drawCircle(bottomCxt);
+            this.drawDots(topCxt);
+            this.drawSkeleton(bottomCxt);
+        };
+        this.erase = function (bottomCxt) {
+            var previousFill = bottomCxt.fillStyle;
+            var previousStyle = bottomCxt.strokeStyle;
+            var previousLineWidth = bottomCxt.lineWidth;
+            bottomCxt.fillStyle = '#FFFFFF';
+            bottomCxt.strokeStyle = '#FFFFFF';
+            bottomCxt.lineWidth = previousLineWidth + 10;
+            this.eraseSkeleton(bottomCxt);
+            this.drawCircle(bottomCxt);
+            bottomCxt.fillStyle = previousFill;
+            bottomCxt.strokeStyle = previousStyle;
+            bottomCxt.lineWidth = previousLineWidth;
+        };
+        this.drawCircle = function (bottomCxt) {
+            if (this.showCircle)
+                this.circle.draw(bottomCxt);
+        };
+        this.drawDots = function (topCxt) {
+            var previousStyle = topCxt.fillStyle;
+            for (var i = 0; i < this.dots.length; i++) {
+                var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
+                var x = dotPos[0], y = dotPos[1];
+                topCxt.fillStyle = this.dots[i].color;
+                topCxt.beginPath();
+                topCxt.arc(x, y, this.dots[i].size, 0, Math.PI * 2);
+                topCxt.closePath();
+                topCxt.fill();
+            }
+            topCxt.fillStyle = previousStyle;
+        };
+        this.drawSkeleton = function (bottomCxt) {
+            if (this.showSkeleton) {
+                for (var i = 0; i < this.dots.length; i++) {
+                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
+                    var x = dotPos[0], y = dotPos[1];
+                    bottomCxt.moveTo(this.circle.x, this.circle.y);
+                    bottomCxt.lineTo(x, y);
+                    bottomCxt.stroke();
+                }
+            }
+        };
+        this.eraseSkeleton = function (bottomCxt) {
+            if (this.showSkeleton) {
+                for (var i = 0; i < this.dots.length; i++) {
+                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
+                    var x = dotPos[0], y = dotPos[1];
+                    bottomCxt.moveTo(x, y);
+                    bottomCxt.lineTo(this.circle.x, this.circle.y);
+                    bottomCxt.stroke();
+                    bottomCxt.beginPath();
+                    bottomCxt.arc(this.circle.x, this.circle.y, 2, 0, Math.PI * 2);
+                    bottomCxt.closePath();
+                    bottomCxt.fill();
+                }
+            }
+        };
+        this.moveTo = function (x, y) {
+            this.circle.moveTo(x, y);
+        };
+    }
+
+    /**
+     * @constructor
+     * */
+    function Dot(size, color, distance, rotOffset) {
+        this.size = size;
+        this.color = color;
+        this.distance = distance;
+        this.rotOffset = rotOffset / 180 * Math.PI;
+    }
+
+    /**
+     * @constructor
+     * @param {Number} x
+     * @param {Number} y
+     * @param {Number} radius
+     * */
+    function Circle(x, y, radius) {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        this.draw = function (cxt) {
+            cxt.beginPath();
+            cxt.arc(this.x, this.y, radius, 0, Math.PI * 2);
+            cxt.closePath();
+            cxt.stroke();
+        };
+        this.erase = function (cxt) {
+            var previousStyle = cxt.strokeStyle;
+            var previousLineWidth = cxt.lineWidth;
+            cxt.strokeStyle = '#FFFFFF';
+            cxt.lineWidth = previousLineWidth + 2;
+            this.draw(cxt);
+            cxt.strokeStyle = previousStyle;
+            cxt.lineWidth = previousLineWidth;
+        };
+        this.moveTo = function (x, y) {
+            this.x = x;
+            this.y = y;
+        }
+    }
+</script>
+</body>
+</html>
