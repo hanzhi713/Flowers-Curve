@@ -166,16 +166,16 @@
 
                     function addDotHelper(currentTime, dotSize, dotColor, dotDist, dotRot) {
                         dots[currentTime] = new Dot(dotSize, dotColor, dotDist, dotRot);
-                        $('#settings').append("<tr id=\"" + currentTime + "\" data-toggle=\"modal\" data-target=\"#DotModalCenter\">" +
-                            "                    <td onclick='preModify(this)'>Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
+                        $('#settings').append("<tr id=\"" + currentTime + "\">" +
+                            "                    <td onclick='preModify(this)' data-toggle=\"modal\" data-target=\"#DotModalCenter\">Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
                             "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
                             "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot +
                             "                    </td>" +
-                            "                    <td>" +
+                            "                    <th width='50px'>" +
                             "                        <button type=\"button\" class=\"close\" aria-label=\"Close\" onclick=\"removeDot(this, '" + currentTime + "')\">" +
                             "                            <span aria-hidden=\"true\">&times;</span>" +
                             "                        </button>" +
-                            "                    </td>" +
+                            "                    </th>" +
                             "                </tr>"
                         );
                     }
