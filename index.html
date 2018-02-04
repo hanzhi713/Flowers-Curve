@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
+    <title>Flowers Curve</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
@@ -70,7 +70,7 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="dotRotOffset">Rotation Offset</label></td>
+                    <td><label for="dotRotOffset">Rotation</label></td>
                     <td><input type="number" id="dotRotOffset" style="width: 50px" value="0" step="1" max="360" min="0">°
                     </td>
                 </tr>
@@ -166,8 +166,8 @@
 
                     function addDotHelper(currentTime, dotSize, dotColor, dotDist, dotRot) {
                         dots[currentTime] = new Dot(dotSize, dotColor, dotDist, dotRot);
-                        $('#settings').append("<tr id=\"" + currentTime + "\" onclick='preModify(this)' data-toggle=\"modal\" data-target=\"#DotModalCenter\">" +
-                            "                    <td>Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
+                        $('#settings').append("<tr id=\"" + currentTime + "\" data-toggle=\"modal\" data-target=\"#DotModalCenter\">" +
+                            "                    <td onclick='preModify(this)'>Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
                             "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
                             "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot +
                             "                    </td>" +
