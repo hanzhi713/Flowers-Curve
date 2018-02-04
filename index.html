@@ -144,8 +144,9 @@
                         // dots.splice(parseInt(id.split('-')[1]), 1);
                         delete dots[id];
                         $(btn.parentNode.parentNode).hide(300, function () {
-                            $(btn).remove();
-                        })
+                            $(btn.parentNode.parentNode).remove();
+                        });
+                        saveConfigToBrowser();
                     }
 
                     function addDot() {
@@ -363,11 +364,16 @@
     var mDotID = document.getElementById('m-dotID');
 
     window.onload = function (ev) {
-        parseConfigJSON(localStorage.getItem('cache'));
+        saveConfigToBrowser();
     };
+
     window.onchange = function (ev) {
         localStorage.setItem('cache', getConfigJSON());
     };
+
+    function saveConfigToBrowser(){
+        parseConfigJSON(localStorage.getItem('cache'));
+    }
 
     function getConfigJSON() {
         var config = {
