@@ -15,6 +15,7 @@
     <link href="https://use.fontawesome.com/releases/v5.0.6/css/all.css" rel="stylesheet">
     <script src="Blob.js"></script>
     <script src="FileSaver.min.js"></script>
+    <script src="gif.js"></script>
     <style>
         .checkbox {
             width: 15px;
@@ -24,11 +25,18 @@
         .tadjusted tr td {
             height: 20px;
         }
-        #settings tr td{
+
+        #settings tr td {
             cursor: auto;
         }
-        #settings tr td:hover{
+
+        #settings tr td:hover {
             cursor: pointer;
+        }
+
+        #button-group tr td {
+            padding-bottom: 10px;
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -78,7 +86,6 @@
                     <td colspan="2" style="text-align: center">
                         <button type="button" class="btn btn-primary" onclick="addDot()">Add</button>&nbsp;&nbsp;&nbsp;
                         <button type="button" class="btn btn-secondary" onclick="randomDot()">Random</button>&nbsp;&nbsp;&nbsp;
-
                         <button type="button" class="btn" data-toggle="modal" data-target="#RangeModalCenter">
                             <i class="fas fa-cog" aria-hidden="true"></i>
                         </button>
@@ -125,9 +132,8 @@
                                         </table>
                                     </div>
                                     <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Save
                                         </button>
-                                        <!--<button type="button" class="btn btn-primary">Save changes</button>-->
                                     </div>
                                 </div>
                             </div>
@@ -142,8 +148,8 @@
                 <script>
                     function removeDot(btn, id) {
                         delete dots[id];
-                        $('#'+id).hide(300, function () {
-                            $('#'+id).remove();
+                        $('#' + id).hide(300, function () {
+                            $('#' + id).remove();
                         });
                         saveConfigToBrowser();
                     }
@@ -169,7 +175,7 @@
                         $('#settings').append("<tr id=\"" + currentTime + "\">" +
                             "                    <td onclick='preModify(this)' data-toggle=\"modal\" data-target=\"#DotModalCenter\">Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
                             "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
-                            "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot +
+                            "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot + "°" +
                             "                    </td>" +
                             "                    <th width='50px'>" +
                             "                        <button type=\"button\" class=\"close\" aria-label=\"Close\" onclick=\"removeDot(this, '" + currentTime + "')\">" +
@@ -180,7 +186,7 @@
                         );
                     }
 
-                    function preModify(td){
+                    function preModify(td) {
                         var dot = dots[td.parentNode.id];
                         mDotSize.value = dot.size;
                         mDotColor.value = dot.color;
@@ -189,7 +195,7 @@
                         mDotID.value = td.parentNode.id;
                     }
 
-                    function postModify(){
+                    function postModify() {
                         var dot = dots[mDotID.value];
                         var dotSize = +mDotSize.value;
                         var dotColor = mDotColor.value;
@@ -197,8 +203,8 @@
                         var dotRot = +mDotRot.value;
                         var tr = document.getElementById(mDotID.value);
                         tr.cells[0].innerHTML = "Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
-                        "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
-                        "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot;
+                            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
+                            "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot + "°";
                         dot.size = dotSize;
                         dot.color = dotColor;
                         dot.distance = dotDist;
@@ -217,12 +223,14 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <table class="table table-striped table-bordered" style="text-align: left; width: 360px; margin: auto auto; font-size: 21px;">
+                            <table class="table table-striped table-bordered"
+                                   style="text-align: left; width: 360px; margin: auto auto; font-size: 21px;">
                                 <tr>
                                     <th><label for="m-dotSize">Size</label></th>
                                     <td>
                                         <input type="hidden" id="m-dotID" value="">
-                                        <input type="number" id="m-dotSize" style="width: 60px" value="6" step="1" max="200" min="1">
+                                        <input type="number" id="m-dotSize" style="width: 60px" value="6" step="1"
+                                               max="200" min="1">
                                     </td>
                                 </tr>
                                 <tr>
@@ -231,18 +239,22 @@
                                 </tr>
                                 <tr>
                                     <th><label for="m-dotDistance">Distance to center</label></th>
-                                    <td><input type="number" id="m-dotDistance" style="width: 60px" value="80" step="1" max="800" min="1">
+                                    <td><input type="number" id="m-dotDistance" style="width: 60px" value="80" step="1"
+                                               max="800" min="1">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th><label for="m-dotRot">Rotation</label></th>
-                                    <td><input type="number" id="m-dotRot" style="width: 60px" value="0" step="1" max="360" min="0">°
+                                    <td><input type="number" id="m-dotRot" style="width: 60px" value="0" step="1"
+                                               max="360" min="0">°
                                     </td>
                                 </tr>
                             </table>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="postModify()">Save</button>
+                            <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="postModify()">
+                                Save
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -254,6 +266,8 @@
                         style="left:0;position: absolute;z-index: 1"></canvas>
                 <canvas id="canvas-bottom" width="640px" height="640px"
                         style="left: 0;position: absolute;z-index: 0"></canvas>
+                <canvas id="canvas-temp" width="640px" height="640px"
+                        style="left: 0;position: absolute;z-index: -1; display: none"></canvas>
             </div>
         </td>
         <td style="width: 250px;vertical-align: top;text-align: center">
@@ -309,20 +323,20 @@
                     </td>
                 </tr>
             </table>
-            <table style="width: 200px; margin: auto auto; text-align: center;">
+            <table id="button-group" style="width: 200px; margin: auto auto; text-align: center;">
                 <tr>
-                    <td style="padding-bottom: 10px; margin-bottom: 10px;">
+                    <td>
                         <button class="btn btn-warning" onclick="caller()">Draw</button>
                     </td>
-                    <td style="padding-bottom: 10px; margin-bottom: 10px;">
+                    <td>
                         <button type="button" class="btn btn-info" onclick="previewRuler()">Preview Ruler</button>
                     </td>
                 </tr>
                 <tr>
-                    <td style="padding-bottom: 10px; margin-bottom: 10px;">
+                    <td>
                         <button type="button" class="btn btn-danger" onclick="stopDrawing()">Stop</button>
                     </td>
-                    <td style="padding-bottom: 10px; margin-bottom: 10px;">
+                    <td>
                         <button type="button" class="btn btn-info" onclick="saveConfig()">Save Config</button>
                     </td>
                 </tr>
@@ -331,9 +345,87 @@
                         <button type="button" class="btn btn-danger" onclick="clear()">Clear</button>
                     </td>
                     <td>
-                        <button title="Clear the circles and the skeleton, keeping your pattern" type="button" class="btn btn-info" onclick="clearBottom()">
+                        <button title="Clear the circles and the skeleton, keeping your pattern" type="button"
+                                class="btn btn-info" onclick="clearBottom()">
                             Clear circles
                         </button>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#GIFModalCenter">
+                            Get GIF
+                        </button>
+
+                        <div class="modal fade" id="GIFModalCenter" tabindex="-1" role="dialog"
+                             aria-labelledby="GIFModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="GIFModalLongTitle">GIF parameters</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table table-striped table-bordered"
+                                               style="text-align: left; width: 360px; margin: auto auto; font-size: 21px;">
+                                            <tr>
+                                                <th><label for="f-interval">Frame interval</label></th>
+                                                <td>
+                                                    <input type="number" id="f-interval" style="width: 60px" value="40"
+                                                           step="1"
+                                                           max="200" min="1">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="f-delay">Frame delay</label></th>
+                                                <td><input type="number" id="f-delay" style="width: 60px" value="20"
+                                                           step="1"
+                                                           max="1000" min="1">
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="f-bgcolor">Background color</label></th>
+                                                <td><input type="color" id="f-bgcolor" value="#FFFFFF"/></td>
+                                            </tr>
+                                            <tr>
+                                                <th><label for="f-quality">Quality</label></th>
+                                                <td><input type="number" id="f-quality" style="width: 60px" value="10"
+                                                           step="1"
+                                                           max="20" min="1">
+                                                </td>
+                                            </tr>
+                                            <!--<tr>-->
+                                            <!--<th><label for="f-delay">Last frame delay</label></th>-->
+                                            <!--<td><input type="number" id="f-delay" style="width: 60px" value="0" step="1"-->
+                                            <!--max="1000" min="1">°-->
+                                            <!--</td>-->
+                                            <!--</tr>-->
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                                            Close
+                                        </button>
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal"
+                                                onclick="saveToGIF()">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="text-align: center;">
+                        <div id="progressdiv" class="progress"
+                             style="width: 100px; height: 30px; margin: auto auto; display: none; text-align: center">
+                            <div id="progressbar" class="progress-bar progress-bar-striped"
+                                 role="progressbar"
+                                 style="width: 10%; font-size: 18px" aria-valuenow="10"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100"></div>
+                        </div>
                     </td>
                 </tr>
                 <script>
@@ -350,6 +442,9 @@
     </tr>
 </table>
 <script>
+
+    var topCanvas = document.getElementById('canvas-top');
+    var bottomCanvas = document.getElementById('canvas-bottom');
     // var dots = {'dot-0': new Dot(3, '#00FFFF', 80, 0)};
     var dots = {};
     var outerCircleParam = document.getElementById('mcRadius');
@@ -361,7 +456,7 @@
     var drawingDelayParam = document.getElementById('delay');
     var journeyParam = document.getElementById('ratio');
     var skeletonCheck = document.getElementById('showSk');
-    var flag = {stop: false};
+    var flag = {stop: false, finished: true};
     var currentJobs = [];
 
     var dotSizeMinParam = document.getElementById('dotSizeMin');
@@ -385,7 +480,7 @@
         saveConfigToBrowser();
     };
 
-    function saveConfigToBrowser(){
+    function saveConfigToBrowser() {
         localStorage.setItem('cache', getConfigJSON());
     }
 
@@ -455,6 +550,129 @@
         }
     }
 
+    function saveToGIF() {
+        var gif = new GIF({
+            workers: 4,
+            quality: +$('#f-quality').val(),
+            workerScript: './gif.worker.js',
+            width: topCanvas.width,
+            height: topCanvas.height
+        });
+
+        var outerCircleRadius = +outerCircleParam.value;
+        var innerCircleRadius = +innerCircleParam.value;
+        stopDrawing();
+        flag.stop = false;
+        flag.finished = false;
+        var ruler = new Ruler(new Circle(0, 0, innerCircleRadius), getDotArray());
+
+        var topCxt = topCanvas.getContext('2d');
+        var bottomCxt = bottomCanvas.getContext('2d');
+        var tempCanvas = document.getElementById('canvas-temp');
+        var tempCxt = tempCanvas.getContext('2d');
+        tempCxt.fillStyle = $('#f-bgcolor').val();
+
+        if (clearBeforeDrawingCheck.checked)
+            clear();
+
+        var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, outerCircleRadius);
+        if (outerCircleCheck.checked)
+            outerCircle.draw(bottomCxt);
+
+        ruler.circle.moveTo(outerCircle.x, outerCircle.y + outerCircle.radius - ruler.circle.radius);
+        ruler.showCircle = innerCircleCheck.checked;
+        ruler.showSkeleton = skeletonCheck.checked;
+
+        var radiiDiff = outerCircle.radius - ruler.circle.radius;
+        var drawingInterval = +drawingDelayParam.value;
+        var innerCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
+        var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
+        var drawingStep = +drawingStepParam.value;
+        var journeyRatio = +journeyParam.value;
+        var totalRotationAngle = Math.PI * journeyRatio * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
+        var initialRotation = Math.PI * 1.5;
+
+        var frameInterval = +$('#f-interval').val();
+        var frameDelay = +$('#f-delay').val();
+        for (var i = initialRotation, delay = 0, counter = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval, counter += 1) {
+            currentJobs.push((function (i, delay, counter) {
+                    return setTimeout(function () {
+                        if (!flag.stop) {
+                            ruler.erase(bottomCxt);
+                            if (outerCircleCheck.checked)
+                                outerCircle.draw(bottomCxt);
+                            var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
+                            ruler.moveTo(newPos[0], newPos[1]);
+                            ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
+                            ruler.draw(topCxt, bottomCxt);
+
+                            if (counter % frameInterval === 0) {
+                                // tempCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                                // tempCxt.putImageData(bottomCxt.getImageData(0, 0, bottomCanvas.width, bottomCanvas.height), 0, 0);
+                                // tempCxt.putImageData(topCxt.getImageData(0, 0, topCanvas.width, topCanvas.height), 0, 0);
+                                tempCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
+                                tempCxt.drawImage(bottomCanvas, 0, 0);
+                                tempCxt.drawImage(topCanvas, 0, 0);
+                                gif.addFrame(tempCxt, {
+                                    copy: true,
+                                    delay: frameDelay //frameInterval + frameInterval * drawingStep
+                                });
+                            }
+                        }
+                    }, delay);
+                }
+            )(i, delay, counter));
+        }
+        currentJobs.push((function (i, delay) {
+                return setTimeout(function () {
+                    if (!flag.stop) {
+                        ruler.erase(bottomCxt);
+                        if (outerCircleCheck.checked)
+                            outerCircle.draw(bottomCxt);
+                        var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
+                        ruler.moveTo(newPos[0], newPos[1]);
+                        ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
+                        ruler.draw(topCxt, bottomCxt);
+
+                        // tempCxt.putImageData(bottomCxt.getImageData(0, 0, bottomCanvas.width, bottomCanvas.height), 0, 0);
+                        // tempCxt.putImageData(topCxt.getImageData(0, 0, topCanvas.width, topCanvas.height), 0, 0);
+                        tempCxt.drawImage(bottomCanvas, 0, 0);
+                        tempCxt.drawImage(topCanvas, 0, 0);
+                        gif.addFrame(tempCxt, {
+                            copy: true,
+                            delay: 1000
+                        });
+
+                        var progressdiv = $('#progressdiv');
+                        var progressbar = $('#progressbar');
+                        progressbar.width('0%');
+                        progressdiv.show(100);
+
+                        gif.on('progress', function (p) {
+                            if (Math.abs(1 - p) < 0.0001) {
+                                progressbar.width('100%');
+                                progressbar.text('OK!');
+                            }
+                            else {
+                                p = Math.round(p * 100);
+                                progressbar.width(p + '%');
+                                progressbar.text(p + '%');
+                            }
+                        });
+
+                        gif.on('finished', function (blob) {
+                            window.open(URL.createObjectURL(blob));
+                            progressdiv.hide(100);
+                        });
+
+                        gif.render();
+                    }
+                }, delay);
+            }
+        )(i, delay));
+
+    }
+
     function getDotArray() {
         var dotArray = [];
         for (var key in dots) {
@@ -468,21 +686,17 @@
         var innerCircleRadius = +innerCircleParam.value;
         stopDrawing();
         flag.stop = false;
+        flag.finished = false;
         draw(outerCircleRadius, new Ruler(new Circle(0, 0, innerCircleRadius), getDotArray()));
     }
 
     function previewRuler() {
-        var topCanvas = document.getElementById('canvas-top');
-        var canvasWidth = topCanvas.width;
-        var canvasHeight = topCanvas.height;
-
         var topCxt = topCanvas.getContext('2d');
-        var bottomCanvas = document.getElementById('canvas-bottom');
         var bottomCxt = bottomCanvas.getContext('2d');
 
         clear();
 
-        var outerCircle = new Circle(canvasWidth / 2, canvasHeight / 2, +outerCircleParam.value);
+        var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, +outerCircleParam.value);
         outerCircle.draw(bottomCxt);
 
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - +innerCircleParam.value, +innerCircleParam.value), getDotArray());
@@ -491,19 +705,17 @@
         ruler.draw(topCxt, bottomCxt);
     }
 
-    function clear(){
+    function clear() {
         clearTop();
         clearBottom();
     }
 
-    function clearTop(){
-        var topCanvas = document.getElementById('canvas-top');
+    function clearTop() {
         var topCxt = topCanvas.getContext('2d');
         topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
     }
 
-    function clearBottom(){
-        var bottomCanvas = document.getElementById('canvas-bottom');
+    function clearBottom() {
         var bottomCxt = bottomCanvas.getContext('2d');
         bottomCxt.clearRect(0, 0, bottomCanvas.width, bottomCanvas.height);
     }
@@ -513,18 +725,13 @@
      * @param {Ruler} ruler
      * */
     function draw(outerCircleRadius, ruler) {
-        var topCanvas = document.getElementById('canvas-top');
-        var canvasWidth = topCanvas.width;
-        var canvasHeight = topCanvas.height;
-
         var topCxt = topCanvas.getContext('2d');
-        var bottomCanvas = document.getElementById('canvas-bottom');
         var bottomCxt = bottomCanvas.getContext('2d');
 
         if (clearBeforeDrawingCheck.checked)
             clear();
 
-        var outerCircle = new Circle(canvasWidth / 2, canvasHeight / 2, outerCircleRadius);
+        var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, outerCircleRadius);
         if (outerCircleCheck.checked)
             outerCircle.draw(bottomCxt);
 
@@ -532,21 +739,24 @@
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
 
-        var road = outerCircle.radius - ruler.circle.radius;
-        var interval = +drawingDelayParam.value;
+        var radiiDiff = outerCircle.radius - ruler.circle.radius;
+        var drawingInterval = +drawingDelayParam.value;
         var innerCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
-        var step = +drawingStepParam.value;
+        var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
+        var drawingStep = +drawingStepParam.value;
         var journeyRatio = +journeyParam.value;
-        for (var i = Math.PI * 1.5, delay = 0; i < Math.PI * (1.5 + journeyRatio * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius); i += step, delay += interval) {
+        var totalRotationAngle = Math.PI * journeyRatio * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
+        var initialRotation = Math.PI * 1.5;
+        for (var i = initialRotation, delay = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval) {
             currentJobs.push((function (i, delay) {
                     return setTimeout(function () {
                         if (!flag.stop) {
                             ruler.erase(bottomCxt);
                             if (outerCircleCheck.checked)
                                 outerCircle.draw(bottomCxt);
-                            var newPos = rad2cor(outerCircle.x, outerCircle.y, road, i);
+                            var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
                             ruler.moveTo(newPos[0], newPos[1]);
-                            ruler.angle = (i - Math.PI * 1.5) * outerCircleRadius / innerCirclePerimeter * 2 * Math.PI;
+                            ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
                             ruler.draw(topCxt, bottomCxt);
                         }
                     }, delay);
@@ -558,6 +768,7 @@
     /**
      * @param {number} x
      * @param {number} y
+     * @return number
      * */
     function lcm(x, y) {
         var a = x, b = y;
@@ -574,6 +785,7 @@
      * @param {number} y
      * @param {number} radius
      * @param {number} rad
+     * @return Array
      * */
     function rad2cor(x, y, radius, rad) {
         return [x + radius * Math.cos(rad), y - radius * Math.sin(rad)];
@@ -590,11 +802,19 @@
         this.angle = 0;
         this.showCircle = true;
         this.showSkeleton = true;
+
+        /**
+         * @param {CanvasRenderingContext2D} topCxt
+         * @param {CanvasRenderingContext2D} bottomCxt
+         * */
         this.draw = function (topCxt, bottomCxt) {
             this.drawCircle(bottomCxt);
             this.drawDots(topCxt);
             this.drawSkeleton(bottomCxt);
         };
+        /**
+         * @param {CanvasRenderingContext2D} bottomCxt
+         * */
         this.erase = function (bottomCxt) {
             var previousFill = bottomCxt.fillStyle;
             var previousStyle = bottomCxt.strokeStyle;
@@ -608,10 +828,16 @@
             bottomCxt.strokeStyle = previousStyle;
             bottomCxt.lineWidth = previousLineWidth;
         };
+        /**
+         * @param {CanvasRenderingContext2D} bottomCxt
+         * */
         this.drawCircle = function (bottomCxt) {
             if (this.showCircle)
                 this.circle.draw(bottomCxt);
         };
+        /**
+         * @param {CanvasRenderingContext2D} topCxt
+         * */
         this.drawDots = function (topCxt) {
             var previousStyle = topCxt.fillStyle;
             for (var i = 0; i < this.dots.length; i++) {
@@ -625,6 +851,9 @@
             }
             topCxt.fillStyle = previousStyle;
         };
+        /**
+         * @param {CanvasRenderingContext2D} bottomCxt
+         * */
         this.drawSkeleton = function (bottomCxt) {
             if (this.showSkeleton) {
                 for (var i = 0; i < this.dots.length; i++) {
@@ -636,6 +865,9 @@
                 }
             }
         };
+        /**
+         * @param {CanvasRenderingContext2D} bottomCxt
+         * */
         this.eraseSkeleton = function (bottomCxt) {
             if (this.showSkeleton) {
                 for (var i = 0; i < this.dots.length; i++) {
@@ -651,6 +883,10 @@
                 }
             }
         };
+        /**
+         * @param {number} x
+         * @param {number} y
+         * */
         this.moveTo = function (x, y) {
             this.circle.moveTo(x, y);
         };
@@ -658,6 +894,10 @@
 
     /**
      * @constructor
+     * @param {number} size
+     * @param {string} color
+     * @param {number} distance
+     * @param {number} rotOffset
      * */
     function Dot(size, color, distance, rotOffset) {
         this.size = size;
@@ -676,12 +916,20 @@
         this.x = x;
         this.y = y;
         this.radius = radius;
+
+        /**
+         * @param {CanvasRenderingContext2D} cxt
+         * */
         this.draw = function (cxt) {
             cxt.beginPath();
             cxt.arc(this.x, this.y, radius, 0, Math.PI * 2);
             cxt.closePath();
             cxt.stroke();
         };
+
+        /**
+         * @param {CanvasRenderingContext2D} cxt
+         * */
         this.erase = function (cxt) {
             var previousStyle = cxt.strokeStyle;
             var previousLineWidth = cxt.lineWidth;
@@ -691,6 +939,11 @@
             cxt.strokeStyle = previousStyle;
             cxt.lineWidth = previousLineWidth;
         };
+
+        /**
+         * @param {number} x
+         * @param {number} y
+         * */
         this.moveTo = function (x, y) {
             this.x = x;
             this.y = y;
@@ -700,7 +953,7 @@
 <div style="width: 500px; margin: auto auto">
     <span style="font-size:18px;">
         Developed by <a href="https://github.com/hanzhi713" target="_blank">Hanzhi Zhou</a>.
-        Click <a href="docs/help.html" target="_blank">here</a> to see instructions.
+        <!--Click <a href="docs/help.html" target="_blank">here</a> to see instructions.-->
     </span>
 </div>
 
