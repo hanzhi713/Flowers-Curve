@@ -16,6 +16,7 @@
     <script src="Blob.js"></script>
     <script src="FileSaver.min.js"></script>
     <script src="gif.js"></script>
+    <script src="canvas-toBlob.js"></script>
     <style>
         .checkbox {
             width: 15px;
@@ -38,20 +39,29 @@
             padding-bottom: 10px;
             margin-bottom: 10px;
         }
+
+        .top-cat {
+            margin-top: 5px;
+            margin-bottom: 0px;
+            padding-top: 0px;
+            padding-bottom: 0px;
+        }
     </style>
 </head>
 <body style="margin: auto auto; width: 1180px">
 <table>
     <thead>
-    <tr style="text-align: center">
-        <td>
-            <p>
+    <tr>
+        <td style="text-align: center; margin-bottom: 0;padding-bottom: 0">
+            <p class="top-cat">
             <h3>Dots Setting</h3></p>
         </td>
-        <td><p>
-            <h3>Canvas</h3></p></td>
-        <td>
-            <p>
+        <td style="text-align: center; margin-bottom: 0;padding-bottom: 0">
+            <p class="top-cat">
+            <h3>Canvas</h3></p>
+        </td>
+        <td style="text-align: center; margin-bottom: 0;padding-bottom: 0">
+            <p class="top-cat">
             <h3>Parameters</h3></p>
         </td>
     </tr>
@@ -269,6 +279,15 @@
                 <canvas id="canvas-temp" width="640px" height="640px"
                         style="left: 0;position: absolute;z-index: -1; display: none"></canvas>
             </div>
+            <div id="progressdiv" class="progress"
+                 style="width: 600px; height: 25px; margin: auto auto; text-align: center; position: relative">
+                <div id="progressbar" class="progress-bar progress-bar-striped"
+                     role="progressbar" style="width: 0%;"
+                     aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                <div style="position: absolute; left: 0; width: 600px; text-align: center; height:25px; line-height:25px;">
+                    <div id="progresslabel" style="display: inline-block; font-size: 18px;"></div>
+                </div>
+            </div>
         </td>
         <td style="width: 250px;vertical-align: top;text-align: center">
             <table class="table table-striped table-sm" style="text-align: left;">
@@ -312,7 +331,7 @@
                     <td><input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0"></td>
                 </tr>
                 <tr>
-                    <td><label for="ratio">Journey ratio</label></td>
+                    <td><label for="ratio">Completeness</label></td>
                     <td><input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
                     </td>
                 </tr>
@@ -326,7 +345,7 @@
             <table id="button-group" style="width: 200px; margin: auto auto; text-align: center;">
                 <tr>
                     <td>
-                        <button class="btn btn-warning" onclick="caller()">Draw</button>
+                        <button class="btn btn-warning" onclick="caller(undefined)">Draw</button>
                     </td>
                     <td>
                         <button type="button" class="btn btn-info" onclick="previewRuler()">Preview Ruler</button>
@@ -334,29 +353,31 @@
                 </tr>
                 <tr>
                     <td>
-                        <button type="button" class="btn btn-danger" onclick="stopDrawing()">Stop</button>
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-danger" onclick="stopDrawing()">Stop</button>
+                            <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="javascript:clear()" onclick="">Clear</a>
+                                <a class="dropdown-item" onclick="clearBottom()">Clear circles</a>
+                            </div>
+                        </div>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info" onclick="saveConfig()">Save Config</button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="button" class="btn btn-danger" onclick="clear()">Clear</button>
-                    </td>
-                    <td>
-                        <button title="Clear the circles and the skeleton, keeping your pattern" type="button"
-                                class="btn btn-info" onclick="clearBottom()">
-                            Clear circles
-                        </button>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#GIFModalCenter">
-                            Get GIF
-                        </button>
-
+                        <div class="btn-group">
+                            <button type="button" class="btn btn-info" onclick="saveConfig()">Save</button>
+                            <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split"
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <span class="sr-only">Toggle Dropdown</span>
+                            </button>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" onclick="saveToPNG()">Save as PNG</a>
+                                <a class="dropdown-item" data-toggle="modal" data-target="#GIFModalCenter">Save as
+                                    GIF</a>
+                            </div>
+                        </div>
                         <div class="modal fade" id="GIFModalCenter" tabindex="-1" role="dialog"
                              aria-labelledby="GIFModalCenterTitle" aria-hidden="true">
                             <div class="modal-dialog modal-dialog-centered" role="document">
@@ -421,16 +442,6 @@
                             </div>
                         </div>
                     </td>
-                    <td style="text-align: center;">
-                        <div id="progressdiv" class="progress"
-                             style="width: 100px; height: 30px; margin: auto auto; display: none; text-align: center">
-                            <div id="progressbar" class="progress-bar progress-bar-striped"
-                                 role="progressbar"
-                                 style="width: 10%; font-size: 18px" aria-valuenow="10"
-                                 aria-valuemin="0"
-                                 aria-valuemax="100"></div>
-                        </div>
-                    </td>
                 </tr>
                 <script>
                     function stopDrawing() {
@@ -456,7 +467,7 @@
     var clearBeforeDrawingCheck = document.getElementById('clearBeforeDrawing');
     var drawingStepParam = document.getElementById('step');
     var drawingDelayParam = document.getElementById('delay');
-    var journeyParam = document.getElementById('ratio');
+    var completenessParam = document.getElementById('ratio');
     var skeletonCheck = document.getElementById('showSk');
 
     var dotSizeMinParam = document.getElementById('dotSizeMin');
@@ -504,7 +515,7 @@
             clearBeforeDrawing: clearBeforeDrawingCheck.checked,
             drawingStep: +drawingStepParam.value,
             drawingDelay: +drawingDelayParam.value,
-            journeyRatio: +journeyParam.value,
+            completeness: +completenessParam.value,
 
             dots: dots,
 
@@ -517,7 +528,7 @@
 
             frameSize: +gifSizeParam.value,
             frameDelay: +gifFrameDelayParam.value,
-            frameBgColor: +gifBgColorParam.value,
+            frameBgColor: gifBgColorParam.value,
             frameQuality: +gifQualityParam.value,
             frameInterval: +gifIntervalParam.value
         };
@@ -536,7 +547,7 @@
             clearBeforeDrawingCheck.checked = obj.clearBeforeDrawing === undefined ? true : obj.clearBeforeDrawing;
             drawingStepParam.value = obj.drawingStep === undefined ? 0.005 : obj.drawingStep;
             drawingDelayParam.value = obj.drawingDelay === undefined ? 2 : obj.drawingDelay;
-            journeyParam.value = obj.journeyRatio === undefined ? 1 : obj.journeyRatio;
+            completenessParam.value = obj.completeness === undefined ? 1 : obj.completeness;
 
             dots = obj.dots;
 
@@ -576,10 +587,23 @@
         }
     }
 
+    function saveToPNG() {
+        caller(function () {
+            var tempCanvas = document.getElementById('canvas-temp');
+            tempCanvas.height = tempCanvas.height;
+            var tempCxt = tempCanvas.getContext('2d');
+            tempCxt.drawImage(bottomCanvas, 0, 0);
+            tempCxt.drawImage(topCanvas, 0, 0);
+            tempCanvas.toBlobHD(function (blob) {
+                saveAs(blob, 'flowers-curve.png');
+            });
+        });
+    }
+
     function saveToGIF() {
         var frameSize = +gifSizeParam.value;
         var gif = new GIF({
-            workers: 4,
+            workers: 3,
             quality: +gifQualityParam.value,
             workerScript: './gif.worker.js',
             width: frameSize,
@@ -617,9 +641,13 @@
         var innerCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
         var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
         var drawingStep = +drawingStepParam.value;
-        var journeyRatio = +journeyParam.value;
-        var totalRotationAngle = Math.PI * journeyRatio * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
+        var completeness = +completenessParam.value;
+        var totalRotationAngle = Math.PI * completeness * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
         var initialRotation = Math.PI * 1.5;
+
+        var progresslabel = $('#progresslabel');
+        var progressbar = $('#progressbar');
+        progressbar.width('0%');
 
         var frameInterval = +gifIntervalParam.value;
         var frameDelay = +gifFrameDelayParam.value;
@@ -636,9 +664,6 @@
                             ruler.draw(topCxt, bottomCxt);
 
                             if (counter % frameInterval === 0) {
-                                // tempCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
-                                // tempCxt.putImageData(bottomCxt.getImageData(0, 0, bottomCanvas.width, bottomCanvas.height), 0, 0);
-                                // tempCxt.putImageData(topCxt.getImageData(0, 0, topCanvas.width, topCanvas.height), 0, 0);
                                 tempCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
                                 tempCxt.drawImage(bottomCanvas, 0, 0);
                                 tempCxt.drawImage(topCanvas, 0, 0);
@@ -646,6 +671,10 @@
                                     copy: true,
                                     delay: frameDelay //frameInterval + frameInterval * drawingStep
                                 });
+
+                                var progress = Math.round((i - initialRotation) / totalRotationAngle * 100);
+                                progressbar.width(progress + '%');
+                                progresslabel.text('Drawing: ' + progress + '%');
                             }
                         }
                     }, delay);
@@ -655,16 +684,6 @@
         currentJobs.push((function (i, delay) {
                 return setTimeout(function () {
                     if (!flag.stop) {
-                        // ruler.erase(bottomCxt);
-                        // if (outerCircleCheck.checked)
-                        //     outerCircle.draw(bottomCxt);
-                        // var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
-                        // ruler.moveTo(newPos[0], newPos[1]);
-                        // ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
-                        // ruler.draw(topCxt, bottomCxt);
-
-                        // tempCxt.putImageData(bottomCxt.getImageData(0, 0, bottomCanvas.width, bottomCanvas.height), 0, 0);
-                        // tempCxt.putImageData(topCxt.getImageData(0, 0, topCanvas.width, topCanvas.height), 0, 0);
                         tempCxt.drawImage(bottomCanvas, 0, 0);
                         tempCxt.drawImage(topCanvas, 0, 0);
                         gif.addFrame(tempCxt, {
@@ -672,20 +691,17 @@
                             delay: 1000
                         });
 
-                        var progressdiv = $('#progressdiv');
-                        var progressbar = $('#progressbar');
                         progressbar.width('0%');
-                        progressdiv.show(100);
 
                         gif.on('progress', function (p) {
                             if (Math.abs(1 - p) < 0.0001) {
                                 progressbar.width('100%');
-                                progressbar.text('OK!');
+                                progresslabel.text('Save as GIF: Finished');
                             }
                             else {
                                 p = Math.round(p * 100);
                                 progressbar.width(p + '%');
-                                progressbar.text(p + '%');
+                                progresslabel.text('Save as GIF: ' + p + '%');
                             }
                         });
 
@@ -709,13 +725,13 @@
         return dotArray;
     }
 
-    function caller() {
+    function caller(callback) {
         var outerCircleRadius = +outerCircleParam.value;
         var innerCircleRadius = +innerCircleParam.value;
         stopDrawing();
         flag.stop = false;
         flag.finished = false;
-        draw(outerCircleRadius, new Ruler(new Circle(0, 0, innerCircleRadius), getDotArray()));
+        draw(outerCircleRadius, new Ruler(new Circle(0, 0, innerCircleRadius), getDotArray()), callback);
     }
 
     function previewRuler() {
@@ -752,7 +768,7 @@
      * @param {number} outerCircleRadius
      * @param {Ruler} ruler
      * */
-    function draw(outerCircleRadius, ruler) {
+    function draw(outerCircleRadius, ruler, callback) {
         var topCxt = topCanvas.getContext('2d');
         var bottomCxt = bottomCanvas.getContext('2d');
 
@@ -767,16 +783,20 @@
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
 
+        var progresslabel = $('#progresslabel');
+        var progressbar = $('#progressbar');
+        progressbar.width('0%');
+
         var radiiDiff = outerCircle.radius - ruler.circle.radius;
         var drawingInterval = +drawingDelayParam.value;
         var innerCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
         var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
         var drawingStep = +drawingStepParam.value;
-        var journeyRatio = +journeyParam.value;
-        var totalRotationAngle = Math.PI * journeyRatio * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
+        var completeness = +completenessParam.value;
+        var totalRotationAngle = Math.PI * completeness * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
         var initialRotation = Math.PI * 1.5;
-        for (var i = initialRotation, delay = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval) {
-            currentJobs.push((function (i, delay) {
+        for (var i = initialRotation, delay = 0, counter = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval, counter += 1) {
+            currentJobs.push((function (i, delay, counter) {
                     return setTimeout(function () {
                         if (!flag.stop) {
                             ruler.erase(bottomCxt);
@@ -786,11 +806,26 @@
                             ruler.moveTo(newPos[0], newPos[1]);
                             ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
                             ruler.draw(topCxt, bottomCxt);
+
+                            if (counter % 20 === 0){
+                                var progress = Math.round((i - initialRotation) / totalRotationAngle * 100);
+                                progressbar.width(progress + '%');
+                                progresslabel.text('Drawing: ' + progress + '%');
+                            }
                         }
                     }, delay);
                 }
-            )(i, delay));
+            )(i, delay, counter));
         }
+        currentJobs.push((function (delay) {
+                return setTimeout(function () {
+                    progressbar.width('100%');
+                    progresslabel.text('Drawing: Finished');
+                    if (callback !== undefined)
+                        callback()
+                }, delay);
+            }
+        )(delay));
     }
 
     /**
