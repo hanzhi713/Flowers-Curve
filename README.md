@@ -11,6 +11,4 @@ Flowers curve is a type of Chinese art. In practice, these curves are drawn by m
 Based on similar mechanics, I designed this webpage for drawing flowers curve in browser. 
 The first GIF is produced with all circles and skeletons shown.
 
-![drawing](docs/demo.gif) 
-
-![drawing2](docs/demo-no-skeleton.gif)
+![drawing](docs/demo.gif)  ![drawing2](docs/demo-no-skeleton.gif)
