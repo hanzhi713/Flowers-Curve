@@ -47,7 +47,7 @@
             padding-bottom: 0px;
         }
 
-        .no-animation{
+        .no-animation {
             -webkit-transition: none;
             -moz-transition: none;
             -ms-transition: none;
@@ -256,7 +256,8 @@
                     <td><input type="checkbox" id="showIC" class="checkbox"/></td>
                 </tr>
                 <tr>
-                    <td><label for="showSk">Show skeleton</label></td>
+                    <td><label for="showSk" title="lines connecting the center of the inner circle and the dots">Show
+                        skeleton</label></td>
                     <td><input type="checkbox" id="showSk" class="checkbox"/></td>
                 </tr>
                 <tr>
@@ -264,16 +265,26 @@
                     <td><input type="checkbox" id="clearBeforeDrawing" class="checkbox"/></td>
                 </tr>
                 <tr>
-                    <td><label for="step">Drawing step</label></td>
-                    <td><input type="number" id="step" style="width: 60px" value="0.005" step="0.001" max="0.5"
-                               min="0.001"></td>
+                    <td>
+                        <label for="step"
+                               title="A number in radians defining the interval for drawing the inner circle and the dots">
+                            Drawing step</label>
+                    </td>
+                    <td>
+                        <input type="number" id="step" style="width: 60px"
+                               value="0.005" step="0.001" max="0.5" min="0.001">
+                    </td>
                 </tr>
                 <tr>
-                    <td><label for="delay">Drawing delay</label></td>
+                    <td>
+                        <label for="delay" title="Delay between each drawing step, in milliseconds">
+                        Drawing delay</label>
+                    </td>
                     <td><input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0"></td>
                 </tr>
                 <tr>
-                    <td><label for="ratio">Completeness</label></td>
+                    <td><label for="ratio" title="A decimal out of one defining the completeness">Completeness</label>
+                    </td>
                     <td><input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
                     </td>
                 </tr>
@@ -318,7 +329,8 @@
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" data-toggle="modal" data-target="#PNGModalCenter">Save as PNG</a>
+                                <a class="dropdown-item" data-toggle="modal" data-target="#PNGModalCenter">Save as
+                                    PNG</a>
                                 <a class="dropdown-item" data-toggle="modal" data-target="#GIFModalCenter">Save as
                                     GIF</a>
                             </div>
@@ -344,21 +356,32 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-interval">Frame interval</label></th>
+                                                <th>
+                                                    <label for="f-interval"
+                                                           title="Indicates how frequently should frames be taken. 40 means 1 frame per 40 drawing steps">
+                                                        Frame interval
+                                                    </label>
+                                                </th>
                                                 <td>
                                                     <input type="number" id="f-interval" style="width: 60px" value="40"
                                                            step="1" max="200" min="1">
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-delay">Frame delay</label></th>
+                                                <th>
+                                                    <label for="f-delay" title="A number in milliseconds that indicates how long a single frame should stay">
+                                                        Frame delay
+                                                    </label>
+                                                </th>
                                                 <td><input type="number" id="f-delay" style="width: 60px" value="20"
                                                            step="1" max="1000" min="1">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th><label for="f-transparent">Transparent</label></th>
-                                                <td><input type="checkbox" id="f-transparent" style="width: 20px; height: 20px" onchange="$('#f-bgcolor').attr('disabled', this.checked)">
+                                                <td><input type="checkbox" id="f-transparent"
+                                                           style="width: 20px; height: 20px"
+                                                           onchange="$('#f-bgcolor').attr('disabled', this.checked)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -366,17 +389,22 @@
                                                 <td><input type="color" id="f-bgcolor" value="#FFFFFF"/></td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-quality">Quality</label></th>
+                                                <th><label for="f-quality" title="The lower the number, the better the GIF quality">Quality</label></th>
                                                 <td><input type="number" id="f-quality" style="width: 60px" value="10"
                                                            step="1" max="20" min="1">
                                                 </td>
                                             </tr>
-                                            <!--<tr>-->
-                                            <!--<th><label for="f-delay">Last frame delay</label></th>-->
-                                            <!--<td><input type="number" id="f-delay" style="width: 60px" value="0" step="1"-->
-                                            <!--max="1000" min="1">°-->
-                                            <!--</td>-->
-                                            <!--</tr>-->
+                                            <tr>
+                                                <th>
+                                                    <label for="f-lastdelay" title="A number in milliseconds that defines how long should the last frame stay">
+                                                        Last frame delay
+                                                    </label>
+                                                </th>
+                                                <td>
+                                                    <input type="number" id="f-lastdelay" style="width: 60px" value="0" step="1"
+                                                max="5000" min="1">°
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
@@ -413,7 +441,9 @@
                                             </tr>
                                             <tr>
                                                 <th><label for="p-transparent">Transparent</label></th>
-                                                <td><input type="checkbox" id="p-transparent" style="width: 20px; height: 20px" onchange="$('#p-bgcolor').attr('disabled', this.checked)">
+                                                <td><input type="checkbox" id="p-transparent"
+                                                           style="width: 20px; height: 20px"
+                                                           onchange="$('#p-bgcolor').attr('disabled', this.checked)">
                                                 </td>
                                             </tr>
                                             <tr>
@@ -441,6 +471,9 @@
     </tr>
 </table>
 <script>
+    $(function () {
+        $('[data-toggle="tooltip"]').tooltip()
+    });
     var TwoPI = Math.PI * 2;
 
     var topCanvas = document.getElementById('canvas-top');
@@ -474,6 +507,7 @@
     var gifBgColorParam = document.getElementById('f-bgcolor');
     var gifFrameDelayParam = document.getElementById('f-delay');
     var gifQualityParam = document.getElementById('f-quality');
+    var gifLastFrameDelayParam = document.getElementById('f-lastdelay');
 
     var pngSizeParam = document.getElementById('p-size');
     var pngTransparentCheck = document.getElementById('p-transparent');
@@ -622,6 +656,7 @@
             frameBgColor: gifBgColorParam.value,
             frameQuality: +gifQualityParam.value,
             frameInterval: +gifIntervalParam.value,
+            lastFrameDelay: +gifLastFrameDelayParam.value,
 
             pngSize: +pngSizeParam.value,
             pngTransparent: pngTransparentCheck.checked,
@@ -659,6 +694,7 @@
             gifBgColorParam.value = obj.frameBgColor === undefined ? '#FFFFFF' : obj.frameBgColor;
             gifQualityParam.value = obj.frameQuality === undefined ? 10 : obj.frameQuality;
             gifIntervalParam.value = obj.frameInterval === undefined ? 40 : obj.frameInterval;
+            gifLastFrameDelayParam.value = obj.lastFrameDelay === undefined ? 1000 : obj.lastFrameDelay;
 
             pngSizeParam.value = obj.pngSize === undefined ? 640 : obj.pngSize;
             pngTransparentCheck.checked = obj.pngTransparent === undefined ? false : obj.pngTransparent;
@@ -694,15 +730,13 @@
             var bgColor = pngBgColorParam.value;
 
             var tempCanvas = document.getElementById('canvas-temp');
-            var previousWidth = tempCanvas.width;
-            var previousHeight = tempCanvas.height;
             tempCanvas.width = pngSize;
             tempCanvas.height = pngSize;
             var tempCxt = tempCanvas.getContext('2d');
 
             if (!transparent) {
                 tempCxt.fillStyle = bgColor;
-                tempCxt.fillRect(0,0,tempCanvas.width, tempCanvas.height)
+                tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
             }
             tempCxt.scale(pngSize / previousWidth, pngSize / previousHeight);
             tempCxt.drawImage(bottomCanvas, 0, 0);
@@ -710,8 +744,6 @@
             tempCanvas.toBlobHD(function (blob) {
                 saveAs(blob, 'flowers-curve.png');
             });
-            tempCanvas.width = previousWidth;
-            tempCanvas.height = previousHeight;
         });
     }
 
@@ -736,14 +768,12 @@
         var bottomCxt = bottomCanvas.getContext('2d');
 
         var tempCanvas = document.getElementById('canvas-temp');
-        var previousWidth = tempCanvas.width;
-        var previousHeight = tempCanvas.height;
         tempCanvas.width = frameSize;
         tempCanvas.height = frameSize;
 
         var tempCxt = tempCanvas.getContext('2d');
 
-        if (!transparent){
+        if (!transparent) {
             tempCxt.fillStyle = gifBgColorParam.value;
             tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
         }
@@ -821,7 +851,7 @@
                         tempCxt.drawImage(topCanvas, 0, 0);
                         gif.addFrame(tempCxt, {
                             copy: true,
-                            delay: 1000
+                            delay: +gifLastFrameDelayParam.value
                         });
 
                         progressbar.width('0%');
@@ -1011,13 +1041,15 @@
          * @param {CanvasRenderingContext2D} bottomCxt
          * */
         this.erase = function (bottomCxt) {
-            var previousLineWidth = bottomCxt.lineWidth;
-            bottomCxt.lineWidth = previousLineWidth + 2;
-            bottomCxt.globalCompositeOperation = 'destination-out';
-            this.drawCircle(bottomCxt);
-            this.eraseSkeleton(bottomCxt);
-            bottomCxt.globalCompositeOperation = 'source-over';
-            bottomCxt.lineWidth = previousLineWidth;
+            if (this.showCircle || this.showSkeleton) {
+                var previousLineWidth = bottomCxt.lineWidth;
+                bottomCxt.lineWidth = previousLineWidth + 2;
+                bottomCxt.globalCompositeOperation = 'destination-out';
+                this.eraseCircle(bottomCxt);
+                this.eraseSkeleton(bottomCxt);
+                bottomCxt.globalCompositeOperation = 'source-over';
+                bottomCxt.lineWidth = previousLineWidth;
+            }
         };
         /**
          * @param {CanvasRenderingContext2D} bottomCxt
@@ -1027,10 +1059,16 @@
                 this.circle.draw(bottomCxt);
         };
         /**
+         * @param {CanvasRenderingContext2D} bottomCxt
+         * */
+        this.eraseCircle = function (bottomCxt) {
+            this.circle.draw(bottomCxt);
+        };
+        /**
          * @param {CanvasRenderingContext2D} topCxt
          * */
         this.drawDots = function (topCxt) {
-            var previousStyle = topCxt.fillStyle;
+            //var previousStyle = topCxt.fillStyle;
             for (var i = 0; i < this.dots.length; i++) {
                 var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
                 var x = dotPos[0], y = dotPos[1];
@@ -1040,7 +1078,7 @@
                 topCxt.closePath();
                 topCxt.fill();
             }
-            topCxt.fillStyle = previousStyle;
+            //topCxt.fillStyle = previousStyle;
         };
         /**
          * @param {CanvasRenderingContext2D} bottomCxt
@@ -1052,8 +1090,8 @@
                     var x = dotPos[0], y = dotPos[1];
                     bottomCxt.moveTo(this.circle.x, this.circle.y);
                     bottomCxt.lineTo(x, y);
-                    bottomCxt.stroke();
                 }
+                bottomCxt.stroke();
             }
         };
         /**
@@ -1061,17 +1099,17 @@
          * */
         this.eraseSkeleton = function (bottomCxt) {
             if (this.showSkeleton) {
+                bottomCxt.beginPath();
                 for (var i = 0; i < this.dots.length; i++) {
                     var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
                     var x = dotPos[0], y = dotPos[1];
                     bottomCxt.moveTo(x, y);
                     bottomCxt.lineTo(this.circle.x, this.circle.y);
-                    bottomCxt.stroke();
-                    bottomCxt.beginPath();
                     bottomCxt.arc(this.circle.x, this.circle.y, 2, 0, TwoPI);
-                    bottomCxt.closePath();
-                    bottomCxt.fill();
                 }
+                bottomCxt.closePath();
+                bottomCxt.stroke();
+                bottomCxt.fill();
             }
         };
         /**

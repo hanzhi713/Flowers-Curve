@@ -16,3 +16,15 @@ The first GIF is produced with all circles and skeletons shown.
 ## Instructions
 
 See my [wiki](https://github.com/hanzhi713/Flowers-Curve/wiki)
+
+## Project Dependencies
+
+[Bootstrap](https://github.com/twbs/bootstrap)
+
+[Blob.js](https://github.com/eligrey/Blob.js)
+
+[FileSaver.js](https://github.com/eligrey/FileSaver.js)
+
+[gif.js](https://github.com/jnordberg/gif.js)
+
+[canvas-toBlob.js](https://github.com/eligrey/canvas-toBlob.js)
