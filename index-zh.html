@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Flowers Curve</title>
+    <title>繁花曲线</title>
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
           integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
     <script src="https://code.jquery.com/jquery-3.2.1.min.js" crossorigin="anonymous"></script>
@@ -62,15 +62,15 @@
     <tr>
         <td style="text-align: center; margin-bottom: 0;padding-bottom: 0">
             <p class="top-cat">
-            <h3>Dots Setting</h3></p>
+            <h3>绘画孔设置</h3></p>
         </td>
         <td style="text-align: center; margin-bottom: 0;padding-bottom: 0">
             <p class="top-cat">
-            <h3>Canvas</h3></p>
+            <h3>画布</h3></p>
         </td>
         <td style="text-align: center; margin-bottom: 0;padding-bottom: 0">
             <p class="top-cat">
-            <h3>Parameters</h3></p>
+            <h3>参数设置</h3></p>
         </td>
     </tr>
     </thead>
@@ -78,33 +78,33 @@
         <td style="width: 250px;vertical-align: top;text-align: center">
             <table class="table table-striped table-sm" style="text-align: left;">
                 <tr style="text-align: center">
-                    <td colspan="2"><h5>Dots</h5></td>
+                    <td colspan="2"><h5>绘画孔</h5></td>
                 </tr>
                 <tr>
-                    <td><label for="dotSize">Size</label></td>
+                    <td><label for="dotSize">尺寸</label></td>
                     <td>
                         <input type="number" id="dotSize" style="width: 50px" value="2" step="1" max="200" min="1">
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="dotColor">Color</label></td>
+                    <td><label for="dotColor">颜色</label></td>
                     <td><input type="color" id="dotColor"/></td>
                 </tr>
                 <tr>
-                    <td><label for="dotDistance">Distance to center</label></td>
+                    <td><label for="dotDistance">离中心的距离</label></td>
                     <td><input type="number" id="dotDistance" style="width: 50px" value="80" step="1" max="800" min="1">
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="dotRotOffset">Rotation</label></td>
+                    <td><label for="dotRotOffset">旋转角度</label></td>
                     <td><input type="number" id="dotRotOffset" style="width: 50px" value="0" step="1" max="360" min="0">°
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2" style="text-align: center">
-                        <button type="button" class="btn btn-primary" onclick="addDot()">Add</button>&nbsp;&nbsp;&nbsp;
-                        <button type="button" class="btn btn-secondary" onclick="randomDot()">Random</button>&nbsp;&nbsp;&nbsp;
-                        <button type="button" class="btn" data-toggle="modal" data-target="#RangeModalCenter">
+                        <button type="button" class="btn btn-primary" onclick="addDot()">添加</button>&nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn btn-secondary" onclick="randomDot()">随机生成</button>&nbsp;&nbsp;&nbsp;
+                        <button type="button" class="btn" data-toggle="modal" data-target="#RangeModalCenter" title="修改随机范围">
                             <i class="fas fa-cog" aria-hidden="true"></i>
                         </button>
                         <div class="modal fade" id="RangeModalCenter" tabindex="-1" role="dialog"
@@ -112,7 +112,7 @@
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="RangeModalLongTitle">Adjust Random Range</h5>
+                                        <h5 class="modal-title" id="RangeModalLongTitle">修改随机范围</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -121,27 +121,27 @@
                                         <table class="table">
                                             <thead class="thead-dark">
                                             <tr>
-                                                <th>Items</th>
-                                                <th>Min</th>
-                                                <th>Max</th>
+                                                <th></th>
+                                                <th>最小</th>
+                                                <th>最大</th>
                                             </tr>
                                             </thead>
                                             <tr>
-                                                <td>Dot Size</td>
+                                                <td>绘画孔尺寸</td>
                                                 <td><input id="dotSizeMin" style="width: 50px;" type="number" min="1"
                                                            max="10" value="1"></td>
                                                 <td><input id="dotSizeMax" style="width: 50px;" type="number" min="1"
                                                            max="10" value="5"></td>
                                             </tr>
                                             <tr>
-                                                <td>Dot Distance</td>
+                                                <td>离中心的距离</td>
                                                 <td><input id="dotDistanceMin" style="width: 50px;" type="number"
                                                            min="0" max="400" value="1"></td>
                                                 <td><input id="dotDistanceMax" style="width: 50px;" type="number"
                                                            min="0" max="400" value="120"></td>
                                             </tr>
                                             <tr>
-                                                <td>Dot Rotation</td>
+                                                <td>旋转角度</td>
                                                 <td><input id="dotRotMin" style="width: 50px;" type="number" min="0"
                                                            max="359" value="0"></td>
                                                 <td><input id="dotRotMax" style="width: 50px;" type="number" min="0"
@@ -161,7 +161,7 @@
             </table>
             <table class="table table-striped table-sm table-hover" style="text-align: left;" id="settings">
                 <tr>
-                    <th colspan="2" style="text-align: center"><h5>Dot List</h5></th>
+                    <th colspan="2" style="text-align: center"><h5>绘画孔列表</h5></th>
                 </tr>
             </table>
             <div class="modal fade" id="DotModalCenter" tabindex="-1" role="dialog"
@@ -169,7 +169,7 @@
                 <div class="modal-dialog modal-dialog-centered" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="DotModalLongTitle">Modify dot parameters</h5>
+                            <h5 class="modal-title" id="DotModalLongTitle">修改绘画孔参数</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -178,7 +178,7 @@
                             <table class="table table-striped table-bordered"
                                    style="text-align: left; width: 360px; margin: auto auto; font-size: 21px;">
                                 <tr>
-                                    <th><label for="m-dotSize">Size</label></th>
+                                    <th><label for="m-dotSize">尺寸</label></th>
                                     <td>
                                         <input type="hidden" id="m-dotID" value="">
                                         <input type="number" id="m-dotSize" style="width: 60px" value="6" step="1"
@@ -186,17 +186,17 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th><label for="m-dotColor">Color</label></th>
+                                    <th><label for="m-dotColor">颜色</label></th>
                                     <td><input type="color" id="m-dotColor"/></td>
                                 </tr>
                                 <tr>
-                                    <th><label for="m-dotDistance">Distance to center</label></th>
+                                    <th><label for="m-dotDistance">离中心的距离</label></th>
                                     <td><input type="number" id="m-dotDistance" style="width: 60px" value="80" step="1"
                                                max="800" min="1">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th><label for="m-dotRot">Rotation</label></th>
+                                    <th><label for="m-dotRot">旋转角度</label></th>
                                     <td><input type="number" id="m-dotRot" style="width: 60px" value="0" step="1"
                                                max="360" min="0">°
                                     </td>
@@ -205,7 +205,7 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="postModify()">
-                                Save
+                                保存
                             </button>
                         </div>
                     </div>
@@ -234,41 +234,40 @@
         <td style="width: 250px;vertical-align: top;text-align: center">
             <table class="table table-striped table-sm" style="text-align: left;">
                 <tr>
-                    <td><label for="mcRadius">Outer circle radius</label></td>
+                    <td><label for="mcRadius">外圆（母尺）直径</label></td>
                     <td>
                         <input type="number" id="mcRadius" style="width: 50px" value="300" step="1" max="1000"
                                min="100">
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="innerRadius">Inner circle radius</label></td>
+                    <td><label for="innerRadius">内圆（子尺）直径</label></td>
                     <td>
                         <input type="number" id="innerRadius" style="width: 50px" value="120" step="1" max="800"
                                min="10" onclick="adjustDotDistanceCap(this)">
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="showOC">Show outer circle</label></td>
+                    <td><label for="showOC">显示外圆</label></td>
                     <td><input type="checkbox" id="showOC" class="checkbox" checked/></td>
                 </tr>
                 <tr>
-                    <td><label for="showIC">Show inner circle</label></td>
+                    <td><label for="showIC">显示内圆</label></td>
                     <td><input type="checkbox" id="showIC" class="checkbox"/></td>
                 </tr>
                 <tr>
-                    <td><label for="showSk" title="lines connecting the center of the inner circle and the dots">Show
-                        skeleton</label></td>
+                    <td><label for="showSk" title="显示连接内圆中心和绘图孔的线">显示骨架</label></td>
                     <td><input type="checkbox" id="showSk" class="checkbox"/></td>
                 </tr>
                 <tr>
-                    <td><label for="clearBeforeDrawing">Clear before drawing</label></td>
+                    <td><label for="clearBeforeDrawing">绘图前清空画板</label></td>
                     <td><input type="checkbox" id="clearBeforeDrawing" class="checkbox"/></td>
                 </tr>
                 <tr>
                     <td>
                         <label for="step"
-                               title="A number in radians defining the interval for drawing the inner circle and the dots">
-                            Drawing step</label>
+                               title="每隔多少弧度画一次内圆和绘图孔。越小图像质量越高但是绘图时间越长">
+                            绘图步长</label>
                     </td>
                     <td>
                         <input type="number" id="step" style="width: 60px"
@@ -277,20 +276,19 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="delay" title="Delay between each drawing step, in milliseconds">
-                        Drawing delay</label>
+                        <label for="delay" title="画每一步之间的延迟，以毫秒记">绘图延迟</label>
                     </td>
                     <td><input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0"></td>
                 </tr>
                 <tr>
-                    <td><label for="ratio" title="A decimal out of one defining the completeness">Completeness</label>
+                    <td><label for="ratio" title="">完整度</label>
                     </td>
                     <td><input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
                     </td>
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <label for="configloader">Load Config</label>
+                        <label for="configloader">加载配置文件</label>
                         <input type="file" id="configloader" onchange="loadConfig(this.files)" style="width:220px;"/>
                     </td>
                 </tr>
@@ -298,41 +296,39 @@
             <table id="button-group" style="width: 200px; margin: auto auto; text-align: center;">
                 <tr>
                     <td>
-                        <button class="btn btn-warning" onclick="caller(undefined)" style="width:75px;">Draw</button>
+                        <button class="btn btn-warning" onclick="caller(undefined)" style="width:75px;">绘制</button>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info" onclick="previewRuler()">Preview</button>
+                        <button type="button" class="btn btn-info" onclick="previewRuler()">预览</button>
                     </td>
                 </tr>
                 <tr>
                     <td>
                         <div class="btn-group">
                             <button type="button" class="btn btn-danger" onclick="stopDrawing()" style="width:50px;">
-                                Stop
+                                停止
                             </button>
                             <button type="button" class="btn btn-danger dropdown-toggle dropdown-toggle-split"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" href="javascript:clear()">Clear</a>
-                                <a class="dropdown-item" onclick="clearBottom()">Clear circles</a>
+                                <a class="dropdown-item" href="javascript:clear()">清空</a>
+                                <a class="dropdown-item" onclick="clearBottom()">清空内圆和外圆</a>
                             </div>
                         </div>
                     </td>
                     <td>
                         <div class="btn-group">
-                            <button type="button" class="btn btn-info" onclick="saveConfig()" style="width:50px;">Save
+                            <button type="button" class="btn btn-info" onclick="saveConfig()" style="width:50px;">保存
                             </button>
                             <button type="button" class="btn btn-info dropdown-toggle dropdown-toggle-split"
                                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <span class="sr-only">Toggle Dropdown</span>
                             </button>
                             <div class="dropdown-menu">
-                                <a class="dropdown-item" data-toggle="modal" data-target="#PNGModalCenter">Save as
-                                    PNG</a>
-                                <a class="dropdown-item" data-toggle="modal" data-target="#GIFModalCenter">Save as
-                                    GIF</a>
+                                <a class="dropdown-item" data-toggle="modal" data-target="#PNGModalCenter">存为PNG</a>
+                                <a class="dropdown-item" data-toggle="modal" data-target="#GIFModalCenter">存为GIF</a>
                             </div>
                         </div>
                         <div class="modal fade" id="GIFModalCenter" tabindex="-1" role="dialog"
@@ -340,7 +336,7 @@
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="GIFModalLongTitle">GIF parameters</h5>
+                                        <h5 class="modal-title" id="GIFModalLongTitle">GIF 参数设置</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -349,7 +345,7 @@
                                         <table class="table table-striped table-bordered table-sm"
                                                style="text-align: left; width: 360px; margin: auto auto; font-size: 21px;">
                                             <tr>
-                                                <th><label for="f-size">Frame size</label></th>
+                                                <th><label for="f-size">GIF尺寸（像素）</label></th>
                                                 <td>
                                                     <input type="number" id="f-size" style="width: 60px" value="320"
                                                            step="1" max="640" min="1">
@@ -358,8 +354,8 @@
                                             <tr>
                                                 <th>
                                                     <label for="f-interval"
-                                                           title="Indicates how frequently should frames be taken. 40 means 1 frame per 40 drawing steps">
-                                                        Frame interval
+                                                           title="多长时间取一帧。40表示每绘制四十步就取一帧">
+                                                        每帧间隔
                                                     </label>
                                                 </th>
                                                 <td>
@@ -369,8 +365,8 @@
                                             </tr>
                                             <tr>
                                                 <th>
-                                                    <label for="f-delay" title="A number in milliseconds that indicates how long a single frame should stay">
-                                                        Frame delay
+                                                    <label for="f-delay" title="每帧应该存在多少毫秒">
+                                                        每帧延迟
                                                     </label>
                                                 </th>
                                                 <td><input type="number" id="f-delay" style="width: 60px" value="20"
@@ -378,42 +374,42 @@
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-transparent">Transparent</label></th>
+                                                <th><label for="f-transparent">透明</label></th>
                                                 <td><input type="checkbox" id="f-transparent"
                                                            style="width: 20px; height: 20px"
                                                            onchange="$('#f-bgcolor').attr('disabled', this.checked)">
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-bgcolor">Background color</label></th>
+                                                <th><label for="f-bgcolor">背景颜色</label></th>
                                                 <td><input type="color" id="f-bgcolor" value="#FFFFFF"/></td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-quality" title="The lower the number, the better the GIF quality will be">Quality</label></th>
+                                                <th><label for="f-quality" title="数值越小质量越好">Quality</label></th>
                                                 <td><input type="number" id="f-quality" style="width: 60px" value="10"
                                                            step="1" max="20" min="1">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>
-                                                    <label for="f-lastdelay" title="A number in milliseconds that defines how long should the last frame stay">
-                                                        Last frame delay
+                                                    <label for="f-lastdelay" title="最后一帧应该存在多少毫米">
+                                                        最后一帧延迟
                                                     </label>
                                                 </th>
                                                 <td>
                                                     <input type="number" id="f-lastdelay" style="width: 80px" value="1000" step="1"
-                                                max="5000" min="1">
+                                                           max="5000" min="1">
                                                 </td>
                                             </tr>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                            Close
+                                            关闭
                                         </button>
                                         <button type="button" class="btn btn-primary" data-dismiss="modal"
                                                 onclick="saveToGIF()">
-                                            Save
+                                            保存
                                         </button>
                                     </div>
                                 </div>
@@ -570,9 +566,9 @@
     function addDotHelper(currentTime, dotSize, dotColor, dotDist, dotRot) {
         dots[currentTime] = new Dot(dotSize, dotColor, dotDist, dotRot);
         $('#settings').append("<tr id=\"" + currentTime + "\">" +
-            "                    <td onclick='preModify(this)' data-toggle=\"modal\" data-target=\"#DotModalCenter\">Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
-            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
-            "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot + "°" +
+            "                    <td onclick='preModify(this)' data-toggle=\"modal\" data-target=\"#DotModalCenter\">离中心距离：" + dotDist + "&nbsp;&nbsp;<br/>颜色：" +
+            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span>" +
+            "                        &nbsp;&nbsp;尺寸：" + dotSize + "<br/>旋转角度：" + dotRot + "°" +
             "                    </td>" +
             "                    <th width='50px'>" +
             "                        <button type=\"button\" class=\"close\" aria-label=\"Close\" onclick=\"removeDot('" + currentTime + "')\">" +
@@ -599,9 +595,9 @@
         var dotDist = +mDotDistance.value;
         var dotRot = +mDotRot.value;
         var tr = document.getElementById(mDotID.value);
-        tr.cells[0].innerHTML = "Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
-            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span><br/>" +
-            "                        Size: " + dotSize + "&nbsp;&nbsp;Rotation: " + dotRot + "°";
+        tr.cells[0].innerHTML = "离中心距离：" + dotDist + "&nbsp;&nbsp;<br/>颜色：" +
+            "                        <span style=\"width: 15px; height: 15px; background-color: " + dotColor + ";display: inline-block\"></span>&nbsp;&nbsp;" +
+            "                        尺寸：" + dotSize + "<br/>旋转角度：" + dotRot + "°";
         dot.size = dotSize;
         dot.color = dotColor;
         dot.distance = dotDist;
@@ -832,7 +828,7 @@
 
                                 var progress = (i - initialRotation) / totalRotationAngle * 100;
                                 progressbar.width(progress + '%');
-                                progressLabel.text('Drawing: ' + progress.toFixed(1) + '%');
+                                progressLabel.text('绘制中: ' + progress.toFixed(1) + '%');
                             }
                         }
                     }, delay);
@@ -859,12 +855,12 @@
                         gif.on('progress', function (p) {
                             if (Math.abs(1 - p) < 0.0001) {
                                 progressbar.width('100%');
-                                progressLabel.text('Save as GIF: Finished');
+                                progressLabel.text('已完成GIF绘制');
                             }
                             else {
                                 p = p * 100;
                                 progressbar.width(p + '%');
-                                progressLabel.text('Save as GIF: ' + p.toFixed(1) + '%');
+                                progressLabel.text('正在保存为GIF: ' + p.toFixed(1) + '%');
                             }
                         });
 
@@ -982,7 +978,7 @@
         currentJobs.push((function (delay) {
                 return setTimeout(function () {
                     progressbar.width('100%');
-                    progressLabel.text('Drawing: Finished');
+                    progressLabel.text('已完成绘制');
                     if (callback !== undefined)
                         callback()
                 }, delay);
@@ -1177,10 +1173,10 @@
         }
     }
 </script>
-<div style="width: 540px; margin: auto auto">
+<div style="width: 400px; margin: auto auto">
     <span style="font-size:18px;">
-        Developed by <a href="https://github.com/hanzhi713" target="_blank">Hanzhi Zhou</a>.
-        Click <a href="https://github.com/hanzhi713/Flowers-Curve/wiki" target="_blank">here</a> to see instructions. <a href="index-zh.html">中文</a>
+        <a href="https://github.com/hanzhi713" target="_blank">周涵之</a>开发。
+        点<a href="https://github.com/hanzhi713/Flowers-Curve/wiki" target="_blank">这里</a>查看详细指南。<a href="index.html">English</a>
     </span>
 </div>
 </body>
