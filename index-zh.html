@@ -104,7 +104,8 @@
                     <td colspan="2" style="text-align: center">
                         <button type="button" class="btn btn-primary" onclick="addDot()">添加</button>&nbsp;&nbsp;&nbsp;
                         <button type="button" class="btn btn-secondary" onclick="randomDot()">随机生成</button>&nbsp;&nbsp;&nbsp;
-                        <button type="button" class="btn" data-toggle="modal" data-target="#RangeModalCenter" title="修改随机范围">
+                        <button type="button" class="btn" data-toggle="modal" data-target="#RangeModalCenter"
+                                title="修改随机范围">
                             <i class="fas fa-cog" aria-hidden="true"></i>
                         </button>
                         <div class="modal fade" id="RangeModalCenter" tabindex="-1" role="dialog"
@@ -270,21 +271,25 @@
                             绘图步长</label>
                     </td>
                     <td>
-                        <input type="number" id="step" style="width: 60px"
-                               value="0.005" step="0.001" max="0.5" min="0.001">
+                        <input type="number" id="step" style="width: 60px" value="0.005" step="0.001" max="0.5"
+                               min="0.001">
                     </td>
                 </tr>
                 <tr>
+                    <td><label for="delay" title="画每一步之间的延迟，以毫秒记">绘图延迟</label></td>
                     <td>
-                        <label for="delay" title="画每一步之间的延迟，以毫秒记">绘图延迟</label>
+                        <input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0">
                     </td>
-                    <td><input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0"></td>
                 </tr>
                 <tr>
-                    <td><label for="ratio" title="">完整度</label>
+                    <td><label for="ratio" title="">完整度</label></td>
+                    <td>
+                        <input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
                     </td>
-                    <td><input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
-                    </td>
+                </tr>
+                <tr>
+                    <td><label for="direction">反向</label></td>
+                    <td><input type="checkbox" id="direction" class="checkbox"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -299,7 +304,8 @@
                         <button class="btn btn-warning" onclick="caller(undefined)" style="width:75px;">绘制</button>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info" onclick="previewRuler()" style="width:75px;">预览</button>
+                        <button type="button" class="btn btn-info" onclick="previewRuler()" style="width:75px;">预览
+                        </button>
                     </td>
                 </tr>
                 <tr>
@@ -397,7 +403,8 @@
                                                     </label>
                                                 </th>
                                                 <td>
-                                                    <input type="number" id="f-lastdelay" style="width: 80px" value="1000" step="1"
+                                                    <input type="number" id="f-lastdelay" style="width: 80px"
+                                                           value="1000" step="1"
                                                            max="5000" min="1">
                                                 </td>
                                             </tr>
@@ -483,6 +490,7 @@
     var drawingDelayParam = document.getElementById('delay');
     var completenessParam = document.getElementById('ratio');
     var skeletonCheck = document.getElementById('showSk');
+    var reverseDirectionCheck = document.getElementById('direction');
 
     var dotSizeMinParam = document.getElementById('dotSizeMin');
     var dotSizeMaxParam = document.getElementById('dotSizeMax');
@@ -537,7 +545,7 @@
 
         var dotDistCap = +innerCircleParam.value;
         if (dotDist > dotDistCap)
-            alert('Dot distance should be no greater than the inner circle radius');
+            alert('绘图孔离中心距离应该小于内圆半径！');
         else
             addDotHelper((new Date()).valueOf().toString(), dotSize, dotColor, dotDist, dotRot);
     }
@@ -577,6 +585,7 @@
             "                    </th>" +
             "                </tr>"
         );
+        saveConfigToBrowser();
     }
 
     function preModify(td) {
@@ -602,6 +611,7 @@
         dot.color = dotColor;
         dot.distance = dotDist;
         dot.rotOffset = dotRot / 180 * Math.PI;
+        saveConfigToBrowser();
     }
 
     function stopDrawing() {
@@ -636,6 +646,7 @@
             drawingStep: +drawingStepParam.value,
             drawingDelay: +drawingDelayParam.value,
             completeness: +completenessParam.value,
+            reverseDirection: reverseDirectionCheck.checked,
 
             dots: dots,
 
@@ -674,6 +685,7 @@
             drawingStepParam.value = obj.drawingStep === undefined ? 0.005 : obj.drawingStep;
             drawingDelayParam.value = obj.drawingDelay === undefined ? 2 : obj.drawingDelay;
             completenessParam.value = obj.completeness === undefined ? 1 : obj.completeness;
+            reverseDirectionCheck.checked = obj.reverseDirection === undefined ? false : obj.reverseDirection;
 
             dots = obj.dots;
 
@@ -733,6 +745,8 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
+        ruler.reverse = reverseDirectionCheck.checked;
+
         stopDrawing();
         flag.stop = false;
 
@@ -800,6 +814,7 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
+        ruler.reverse = reverseDirectionCheck.checked;
 
         var radiiDiff = outerCircle.radius - ruler.circle.radius;
         var drawingInterval = +drawingDelayParam.value;
@@ -843,7 +858,7 @@
 
                                 var progress = (i - initialRotation) / totalRotationAngle * 100;
                                 progressbar.width(progress + '%');
-                                progressLabel.text('绘制中：' + progress.toFixed(1) + '%');
+                                progressLabel.text('绘图中：' + progress.toFixed(1) + '%');
                             }
                         }
                     }, delay);
@@ -910,6 +925,7 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - +innerCircleParam.value, +innerCircleParam.value), getDotArray());
         ruler.showCircle = true;
         ruler.showSkeleton = true;
+        ruler.reverse = reverseDirectionCheck.checked;
         ruler.draw(topCxt, bottomCxt);
     }
 
@@ -938,6 +954,8 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
+        ruler.reverse = reverseDirectionCheck.checked;
+
         stopDrawing();
         flag.stop = false;
 
@@ -967,8 +985,6 @@
         progressbar.width('0%');
 
         var radiiDiff = outerCircle.radius - ruler.circle.radius;
-        var innerCirclePerimeter = ruler.circle.radius * TwoPI;
-        var outerCirclePerimeter = outerCircle.radius * TwoPI;
         var totalRotationAngle = completeness * TwoPI * lcm(outerCircle.radius, ruler.circle.radius) / outerCircle.radius;
         var initialRotation = Math.PI * 1.5;
         for (var i = initialRotation, delay = 0, counter = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval, counter += 1) {
@@ -978,15 +994,16 @@
                             ruler.erase(bottomCxt);
                             if (outerCircleCheck.checked)
                                 outerCircle.draw(bottomCxt);
+
                             var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
                             ruler.moveTo(newPos[0], newPos[1]);
-                            ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
+                            ruler.angle = (i - initialRotation) * outerCircle.radius / ruler.circle.radius;
                             ruler.draw(topCxt, bottomCxt);
 
                             if (counter % 20 === 0) {
                                 var progress = (i - initialRotation) / totalRotationAngle * 100;
                                 progressbar.width(progress + '%');
-                                progressLabel.text('绘制中: ' + progress.toFixed(1) + '%');
+                                progressLabel.text('绘图中：' + progress.toFixed(1) + '%');
                             }
                         }
                     }, delay);
@@ -996,7 +1013,7 @@
         currentJobs.push((function (delay) {
                 return setTimeout(function () {
                     progressbar.width('100%');
-                    progressLabel.text('已完成绘制');
+                    progressLabel.text('绘图中：完成');
                     if (callback !== undefined)
                         callback()
                 }, delay);
@@ -1041,6 +1058,7 @@
         this.angle = 0;
         this.showCircle = true;
         this.showSkeleton = true;
+        this.reverse = false;
 
         /**
          * @param {CanvasRenderingContext2D} topCxt
@@ -1084,11 +1102,10 @@
         this.drawDots = function (topCxt) {
             //var previousStyle = topCxt.fillStyle;
             for (var i = 0; i < this.dots.length; i++) {
-                var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
-                var x = dotPos[0], y = dotPos[1];
+                var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.reverse ? this.angle + this.dots[i].rotOffset : TwoPI - (this.angle + this.dots[i].rotOffset) % TwoPI);
                 topCxt.fillStyle = this.dots[i].color;
                 topCxt.beginPath();
-                topCxt.arc(x, y, this.dots[i].size, 0, TwoPI);
+                topCxt.arc(dotPos[0], dotPos[1], this.dots[i].size, 0, TwoPI);
                 topCxt.closePath();
                 topCxt.fill();
             }
@@ -1100,10 +1117,9 @@
         this.drawSkeleton = function (bottomCxt) {
             if (this.showSkeleton) {
                 for (var i = 0; i < this.dots.length; i++) {
-                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
-                    var x = dotPos[0], y = dotPos[1];
+                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.reverse ? this.angle + this.dots[i].rotOffset : TwoPI - (this.angle + this.dots[i].rotOffset) % TwoPI);
                     bottomCxt.moveTo(this.circle.x, this.circle.y);
-                    bottomCxt.lineTo(x, y);
+                    bottomCxt.lineTo(dotPos[0], dotPos[1]);
                 }
                 bottomCxt.stroke();
             }
@@ -1115,9 +1131,8 @@
             if (this.showSkeleton) {
                 bottomCxt.beginPath();
                 for (var i = 0; i < this.dots.length; i++) {
-                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
-                    var x = dotPos[0], y = dotPos[1];
-                    bottomCxt.moveTo(x, y);
+                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.reverse ? this.angle + this.dots[i].rotOffset : TwoPI - (this.angle + this.dots[i].rotOffset) % TwoPI);
+                    bottomCxt.moveTo(dotPos[0], dotPos[1]);
                     bottomCxt.lineTo(this.circle.x, this.circle.y);
                     bottomCxt.arc(this.circle.x, this.circle.y, 2, 0, TwoPI);
                 }

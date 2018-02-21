@@ -278,15 +278,26 @@
                 <tr>
                     <td>
                         <label for="delay" title="Delay between each drawing step, in milliseconds">
-                        Drawing delay</label>
+                            Drawing delay
+                        </label>
                     </td>
-                    <td><input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0"></td>
+                    <td>
+                        <input type="number" id="delay" style="width: 50px" value="2" step="1" max="10" min="0">
+                    </td>
                 </tr>
                 <tr>
-                    <td><label for="ratio" title="A decimal out of one defining the completeness">Completeness</label>
+                    <td>
+                        <label for="ratio" title="A decimal out of one defining the completeness">
+                            Completeness
+                        </label>
                     </td>
-                    <td><input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
+                    <td>
+                        <input type="number" id="ratio" style="width: 60px" value="1" step="0.001" max="1" min="0.001">
                     </td>
+                </tr>
+                <tr>
+                    <td><label for="direction">Reverse direction</label></td>
+                    <td><input type="checkbox" id="direction" class="checkbox"></td>
                 </tr>
                 <tr>
                     <td colspan="2">
@@ -369,7 +380,8 @@
                                             </tr>
                                             <tr>
                                                 <th>
-                                                    <label for="f-delay" title="A number in milliseconds that indicates how long a single frame should stay">
+                                                    <label for="f-delay"
+                                                           title="A number in milliseconds that indicates how long a single frame should stay">
                                                         Frame delay
                                                     </label>
                                                 </th>
@@ -389,20 +401,24 @@
                                                 <td><input type="color" id="f-bgcolor" value="#FFFFFF"/></td>
                                             </tr>
                                             <tr>
-                                                <th><label for="f-quality" title="The lower the number, the better the GIF quality will be">Quality</label></th>
+                                                <th><label for="f-quality"
+                                                           title="The lower the number, the better the GIF quality will be">Quality</label>
+                                                </th>
                                                 <td><input type="number" id="f-quality" style="width: 60px" value="10"
                                                            step="1" max="20" min="1">
                                                 </td>
                                             </tr>
                                             <tr>
                                                 <th>
-                                                    <label for="f-lastdelay" title="A number in milliseconds that defines how long should the last frame stay">
+                                                    <label for="f-lastdelay"
+                                                           title="A number in milliseconds that defines how long should the last frame stay">
                                                         Last frame delay
                                                     </label>
                                                 </th>
                                                 <td>
-                                                    <input type="number" id="f-lastdelay" style="width: 80px" value="1000" step="1"
-                                                max="5000" min="1">
+                                                    <input type="number" id="f-lastdelay" style="width: 80px"
+                                                           value="1000" step="1"
+                                                           max="5000" min="1">
                                                 </td>
                                             </tr>
                                         </table>
@@ -487,6 +503,7 @@
     var drawingDelayParam = document.getElementById('delay');
     var completenessParam = document.getElementById('ratio');
     var skeletonCheck = document.getElementById('showSk');
+    var reverseDirectionCheck = document.getElementById('direction');
 
     var dotSizeMinParam = document.getElementById('dotSizeMin');
     var dotSizeMaxParam = document.getElementById('dotSizeMax');
@@ -581,6 +598,7 @@
             "                    </th>" +
             "                </tr>"
         );
+        saveConfigToBrowser();
     }
 
     function preModify(td) {
@@ -606,6 +624,7 @@
         dot.color = dotColor;
         dot.distance = dotDist;
         dot.rotOffset = dotRot / 180 * Math.PI;
+        saveConfigToBrowser();
     }
 
     function stopDrawing() {
@@ -640,6 +659,7 @@
             drawingStep: +drawingStepParam.value,
             drawingDelay: +drawingDelayParam.value,
             completeness: +completenessParam.value,
+            reverseDirection: reverseDirectionCheck.checked,
 
             dots: dots,
 
@@ -678,6 +698,7 @@
             drawingStepParam.value = obj.drawingStep === undefined ? 0.005 : obj.drawingStep;
             drawingDelayParam.value = obj.drawingDelay === undefined ? 2 : obj.drawingDelay;
             completenessParam.value = obj.completeness === undefined ? 1 : obj.completeness;
+            reverseDirectionCheck.checked = obj.reverseDirection === undefined ? false : obj.reverseDirection;
 
             dots = obj.dots;
 
@@ -737,6 +758,8 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
+        ruler.reverse = reverseDirectionCheck.checked;
+
         stopDrawing();
         flag.stop = false;
 
@@ -804,6 +827,7 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
+        ruler.reverse = reverseDirectionCheck.checked;
 
         var radiiDiff = outerCircle.radius - ruler.circle.radius;
         var drawingInterval = +drawingDelayParam.value;
@@ -914,6 +938,7 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - +innerCircleParam.value, +innerCircleParam.value), getDotArray());
         ruler.showCircle = true;
         ruler.showSkeleton = true;
+        ruler.reverse = reverseDirectionCheck.checked;
         ruler.draw(topCxt, bottomCxt);
     }
 
@@ -942,6 +967,8 @@
         var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
+        ruler.reverse = reverseDirectionCheck.checked;
+
         stopDrawing();
         flag.stop = false;
 
@@ -971,8 +998,6 @@
         progressbar.width('0%');
 
         var radiiDiff = outerCircle.radius - ruler.circle.radius;
-        var innerCirclePerimeter = ruler.circle.radius * TwoPI;
-        var outerCirclePerimeter = outerCircle.radius * TwoPI;
         var totalRotationAngle = completeness * TwoPI * lcm(outerCircle.radius, ruler.circle.radius) / outerCircle.radius;
         var initialRotation = Math.PI * 1.5;
         for (var i = initialRotation, delay = 0, counter = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval, counter += 1) {
@@ -982,9 +1007,10 @@
                             ruler.erase(bottomCxt);
                             if (outerCircleCheck.checked)
                                 outerCircle.draw(bottomCxt);
+
                             var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
                             ruler.moveTo(newPos[0], newPos[1]);
-                            ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
+                            ruler.angle = (i - initialRotation) * outerCircle.radius / ruler.circle.radius;
                             ruler.draw(topCxt, bottomCxt);
 
                             if (counter % 20 === 0) {
@@ -1045,6 +1071,7 @@
         this.angle = 0;
         this.showCircle = true;
         this.showSkeleton = true;
+        this.reverse = false;
 
         /**
          * @param {CanvasRenderingContext2D} topCxt
@@ -1088,11 +1115,10 @@
         this.drawDots = function (topCxt) {
             //var previousStyle = topCxt.fillStyle;
             for (var i = 0; i < this.dots.length; i++) {
-                var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
-                var x = dotPos[0], y = dotPos[1];
+                var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.reverse ? this.angle + this.dots[i].rotOffset : TwoPI - (this.angle + this.dots[i].rotOffset) % TwoPI);
                 topCxt.fillStyle = this.dots[i].color;
                 topCxt.beginPath();
-                topCxt.arc(x, y, this.dots[i].size, 0, TwoPI);
+                topCxt.arc(dotPos[0], dotPos[1], this.dots[i].size, 0, TwoPI);
                 topCxt.closePath();
                 topCxt.fill();
             }
@@ -1104,10 +1130,9 @@
         this.drawSkeleton = function (bottomCxt) {
             if (this.showSkeleton) {
                 for (var i = 0; i < this.dots.length; i++) {
-                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
-                    var x = dotPos[0], y = dotPos[1];
+                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.reverse ? this.angle + this.dots[i].rotOffset : TwoPI - (this.angle + this.dots[i].rotOffset) % TwoPI);
                     bottomCxt.moveTo(this.circle.x, this.circle.y);
-                    bottomCxt.lineTo(x, y);
+                    bottomCxt.lineTo(dotPos[0], dotPos[1]);
                 }
                 bottomCxt.stroke();
             }
@@ -1119,9 +1144,8 @@
             if (this.showSkeleton) {
                 bottomCxt.beginPath();
                 for (var i = 0; i < this.dots.length; i++) {
-                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.angle + this.dots[i].rotOffset);
-                    var x = dotPos[0], y = dotPos[1];
-                    bottomCxt.moveTo(x, y);
+                    var dotPos = rad2cor(this.circle.x, this.circle.y, this.dots[i].distance, this.reverse ? this.angle + this.dots[i].rotOffset : TwoPI - (this.angle + this.dots[i].rotOffset) % TwoPI);
+                    bottomCxt.moveTo(dotPos[0], dotPos[1]);
                     bottomCxt.lineTo(this.circle.x, this.circle.y);
                     bottomCxt.arc(this.circle.x, this.circle.y, 2, 0, TwoPI);
                 }
@@ -1198,7 +1222,8 @@
 <div style="width: 540px; margin: auto auto">
     <span style="font-size:18px;">
         Developed by <a href="https://github.com/hanzhi713" target="_blank">Hanzhi Zhou</a>.
-        Click <a href="https://github.com/hanzhi713/Flowers-Curve/wiki" target="_blank">here</a> to see instructions. <a href="index-zh.html">中文</a>
+        Click <a href="https://github.com/hanzhi713/Flowers-Curve/wiki" target="_blank">here</a> to see instructions. <a
+            href="index-zh.html">中文</a>
     </span>
 </div>
 </body>

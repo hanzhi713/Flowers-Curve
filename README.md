@@ -13,7 +13,7 @@ Flowers curve is a type of Chinese art invented by Binglie Yang. In practice, th
 Based on similar mechanics, I designed this webpage for drawing flowers curve in browser. 
 The first GIF is produced with all circles and skeletons shown.
 
-<img src="docs/demo.gif" width="200px"/>  <img src="docs/demo-no-skeleton.gif" width="200px"/>
+<img src="docs/demo-new.gif" width="250px"/>  <img src="docs/demo-new-no-skeleton.gif" width="250px"/>
 
 ## Detailed Instructions
 
