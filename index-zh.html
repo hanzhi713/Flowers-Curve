@@ -299,7 +299,7 @@
                         <button class="btn btn-warning" onclick="caller(undefined)" style="width:75px;">绘制</button>
                     </td>
                     <td>
-                        <button type="button" class="btn btn-info" onclick="previewRuler()">预览</button>
+                        <button type="button" class="btn btn-info" onclick="previewRuler()" style="width:75px;">预览</button>
                     </td>
                 </tr>
                 <tr>
@@ -347,7 +347,7 @@
                                             <tr>
                                                 <th><label for="f-size">GIF尺寸（像素）</label></th>
                                                 <td>
-                                                    <input type="number" id="f-size" style="width: 60px" value="320"
+                                                    <input type="number" id="f-size" style="width: 80px" value="320"
                                                            step="1" max="640" min="1">
                                                 </td>
                                             </tr>
@@ -420,7 +420,7 @@
                             <div class="modal-dialog modal-dialog-centered" role="document">
                                 <div class="modal-content">
                                     <div class="modal-header">
-                                        <h5 class="modal-title" id="PNGModalLongTitle">PNG parameters</h5>
+                                        <h5 class="modal-title" id="PNGModalLongTitle">PNG 参数</h5>
                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                             <span aria-hidden="true">&times;</span>
                                         </button>
@@ -429,32 +429,32 @@
                                         <table class="table table-striped table-bordered"
                                                style="text-align: left; width: 360px; margin: auto auto; font-size: 21px;">
                                             <tr>
-                                                <th><label for="p-size">PNG size</label></th>
+                                                <th><label for="p-size">PNG 尺寸</label></th>
                                                 <td>
-                                                    <input type="number" id="p-size" style="width: 60px" value="320"
+                                                    <input type="number" id="p-size" style="width: 80px" value="320"
                                                            step="1" max="640" min="1">
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><label for="p-transparent">Transparent</label></th>
+                                                <th><label for="p-transparent">透明</label></th>
                                                 <td><input type="checkbox" id="p-transparent"
                                                            style="width: 20px; height: 20px"
                                                            onchange="$('#p-bgcolor').attr('disabled', this.checked)">
                                                 </td>
                                             </tr>
                                             <tr>
-                                                <th><label for="p-bgcolor">Background color</label></th>
+                                                <th><label for="p-bgcolor">背景色</label></th>
                                                 <td><input type="color" id="p-bgcolor" value="#FFFFFF"/></td>
                                             </tr>
                                         </table>
                                     </div>
                                     <div class="modal-footer">
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                                            Close
+                                            关闭
                                         </button>
                                         <button type="button" class="btn btn-primary" data-dismiss="modal"
                                                 onclick="saveToPNG()">
-                                            Save
+                                            保存
                                         </button>
                                     </div>
                                 </div>
@@ -688,6 +688,10 @@
             gifFrameDelayParam.value = obj.frameDelay === undefined ? 25 : obj.frameDelay;
             gifTransparentCheck.checked = obj.frameTransparent === undefined ? false : obj.frameTransparent;
             gifBgColorParam.value = obj.frameBgColor === undefined ? '#FFFFFF' : obj.frameBgColor;
+
+            if (gifTransparentCheck.checked)
+                gifBgColorParam.disabled = true;
+
             gifQualityParam.value = obj.frameQuality === undefined ? 10 : obj.frameQuality;
             gifIntervalParam.value = obj.frameInterval === undefined ? 40 : obj.frameInterval;
             gifLastFrameDelayParam.value = obj.lastFrameDelay === undefined ? 1000 : obj.lastFrameDelay;
@@ -695,6 +699,9 @@
             pngSizeParam.value = obj.pngSize === undefined ? 640 : obj.pngSize;
             pngTransparentCheck.checked = obj.pngTransparent === undefined ? false : obj.pngTransparent;
             pngBgColorParam.value = obj.pngBgColor === undefined ? '#FFFFFF' : obj.pngBgColor;
+
+            if (pngTransparentCheck.checked)
+                pngBgColorParam.disabled = true;
 
             for (var key in dots) {
                 addDotHelper(key, dots[key].size, dots[key].color, dots[key].distance, Math.round(180 * dots[key].rotOffset / Math.PI));
@@ -720,7 +727,16 @@
     }
 
     function saveToPNG() {
-        caller(function () {
+        var innerCircleRadius = +innerCircleParam.value;
+        var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, +outerCircleParam.value);
+
+        var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
+        ruler.showCircle = innerCircleCheck.checked;
+        ruler.showSkeleton = skeletonCheck.checked;
+        stopDrawing();
+        flag.stop = false;
+
+        draw(outerCircle, ruler, 0, +drawingStepParam.value, +completenessParam.value, function () {
             var pngSize = +pngSizeParam.value;
             var transparent = pngTransparentCheck.checked;
             var bgColor = pngBgColorParam.value;
@@ -747,7 +763,7 @@
         var frameSize = +gifSizeParam.value;
         var transparent = gifTransparentCheck.checked;
         var gif = new GIF({
-            workers: 3,
+            workers: 4,
             quality: +gifQualityParam.value,
             workerScript: './gif.worker.js',
             width: frameSize,
@@ -758,7 +774,6 @@
         var innerCircleRadius = +innerCircleParam.value;
         stopDrawing();
         flag.stop = false;
-        var ruler = new Ruler(new Circle(0, 0, innerCircleRadius), getDotArray());
 
         var topCxt = topCanvas.getContext('2d');
         var bottomCxt = bottomCanvas.getContext('2d');
@@ -766,7 +781,6 @@
         var tempCanvas = document.getElementById('canvas-temp');
         tempCanvas.width = frameSize;
         tempCanvas.height = frameSize;
-
         var tempCxt = tempCanvas.getContext('2d');
 
         if (!transparent) {
@@ -783,7 +797,7 @@
         if (outerCircleCheck.checked)
             outerCircle.draw(bottomCxt);
 
-        ruler.circle.moveTo(outerCircle.x, outerCircle.y + outerCircle.radius - ruler.circle.radius);
+        var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
         ruler.showCircle = innerCircleCheck.checked;
         ruler.showSkeleton = skeletonCheck.checked;
 
@@ -793,7 +807,7 @@
         var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
         var drawingStep = +drawingStepParam.value;
         var completeness = +completenessParam.value;
-        var totalRotationAngle = Math.PI * completeness * 2 * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
+        var totalRotationAngle = completeness * TwoPI * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
         var initialRotation = Math.PI * 1.5;
 
         var progressLabel = $('#progressLabel');
@@ -809,6 +823,7 @@
                             ruler.erase(bottomCxt);
                             if (outerCircleCheck.checked)
                                 outerCircle.draw(bottomCxt);
+
                             var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
                             ruler.moveTo(newPos[0], newPos[1]);
                             ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
@@ -828,7 +843,7 @@
 
                                 var progress = (i - initialRotation) / totalRotationAngle * 100;
                                 progressbar.width(progress + '%');
-                                progressLabel.text('绘制中: ' + progress.toFixed(1) + '%');
+                                progressLabel.text('绘制中：' + progress.toFixed(1) + '%');
                             }
                         }
                     }, delay);
@@ -855,12 +870,12 @@
                         gif.on('progress', function (p) {
                             if (Math.abs(1 - p) < 0.0001) {
                                 progressbar.width('100%');
-                                progressLabel.text('已完成GIF绘制');
+                                progressLabel.text('保存为GIF：完成');
                             }
                             else {
                                 p = p * 100;
                                 progressbar.width(p + '%');
-                                progressLabel.text('正在保存为GIF: ' + p.toFixed(1) + '%');
+                                progressLabel.text('保存为GIF：' + p.toFixed(1) + '%');
                             }
                         });
 
@@ -881,14 +896,6 @@
             dotArray.push(dots[key]);
         }
         return dotArray;
-    }
-
-    function caller(callback) {
-        var outerCircleRadius = +outerCircleParam.value;
-        var innerCircleRadius = +innerCircleParam.value;
-        stopDrawing();
-        flag.stop = false;
-        draw(outerCircleRadius, new Ruler(new Circle(0, 0, innerCircleRadius), getDotArray()), callback);
     }
 
     function previewRuler() {
@@ -922,36 +929,47 @@
     }
 
     /**
-     * @param {number} outerCircleRadius
-     * @param {Ruler} ruler
      * @param {Function} callback
      * */
-    function draw(outerCircleRadius, ruler, callback) {
+    function caller(callback) {
+        var innerCircleRadius = +innerCircleParam.value;
+        var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, +outerCircleParam.value);
+
+        var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
+        ruler.showCircle = innerCircleCheck.checked;
+        ruler.showSkeleton = skeletonCheck.checked;
+        stopDrawing();
+        flag.stop = false;
+
+        draw(outerCircle, ruler, +drawingDelayParam.value, +drawingStepParam.value, +completenessParam.value, callback);
+    }
+
+    /**
+     * @param {Circle} outerCircle
+     * @param {Ruler} ruler
+     * @param {number} drawingInterval
+     * @param {number} drawingStep
+     * @param {number} completeness
+     * @param {Function} callback
+     * */
+    function draw(outerCircle, ruler, drawingInterval, drawingStep, completeness, callback) {
         var topCxt = topCanvas.getContext('2d');
         var bottomCxt = bottomCanvas.getContext('2d');
 
         if (clearBeforeDrawingCheck.checked)
             clear();
 
-        var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, outerCircleRadius);
         if (outerCircleCheck.checked)
             outerCircle.draw(bottomCxt);
-
-        ruler.circle.moveTo(outerCircle.x, outerCircle.y + outerCircle.radius - ruler.circle.radius);
-        ruler.showCircle = innerCircleCheck.checked;
-        ruler.showSkeleton = skeletonCheck.checked;
 
         var progressLabel = $('#progressLabel');
         var progressbar = $('#progressbar');
         progressbar.width('0%');
 
         var radiiDiff = outerCircle.radius - ruler.circle.radius;
-        var drawingInterval = +drawingDelayParam.value;
         var innerCirclePerimeter = ruler.circle.radius * TwoPI;
-        var outerCirclePerimeter = outerCircleRadius * TwoPI;
-        var drawingStep = +drawingStepParam.value;
-        var completeness = +completenessParam.value;
-        var totalRotationAngle = completeness * TwoPI * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
+        var outerCirclePerimeter = outerCircle.radius * TwoPI;
+        var totalRotationAngle = completeness * TwoPI * lcm(outerCircle.radius, ruler.circle.radius) / outerCircle.radius;
         var initialRotation = Math.PI * 1.5;
         for (var i = initialRotation, delay = 0, counter = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval, counter += 1) {
             currentJobs.push((function (i, delay, counter) {
@@ -968,7 +986,7 @@
                             if (counter % 20 === 0) {
                                 var progress = (i - initialRotation) / totalRotationAngle * 100;
                                 progressbar.width(progress + '%');
-                                progressLabel.text('Drawing: ' + progress.toFixed(1) + '%');
+                                progressLabel.text('绘制中: ' + progress.toFixed(1) + '%');
                             }
                         }
                     }, delay);
