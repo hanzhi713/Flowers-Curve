@@ -15,7 +15,7 @@
 
 <img src="docs/demo.gif" width="200px"/>  <img src="docs/demo-no-skeleton.gif" width="200px"/>
 
-## 如何使用和详细介绍
+## 如何使用
 
 见我的 [wiki](https://github.com/hanzhi713/Flowers-Curve/wiki)
 
