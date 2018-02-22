@@ -1,10 +1,10 @@
 # Auto detect text files and perform LF normalization
 * text=auto
 
-canvas-toBlob.js linguist-vendored
-FileSaver.min.js linguist-vendored
-gif.js linguist-vendored
-gif.worker.js linguist-vendored
-Blob.js linguist-vendored
+# canvas-toBlob.js linguist-vendored
+# FileSaver.min.js linguist-vendored
+# gif.js linguist-vendored
+# gif.worker.js linguist-vendored
+# Blob.js linguist-vendored
 
-*.html linguist-language=JavaScript
+# *.html linguist-language=JavaScript
