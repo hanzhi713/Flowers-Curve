@@ -5,8 +5,8 @@
 To use my online drawer, please visit [https://hanzhi713.github.io/Flowers-Curve/](https://hanzhi713.github.io/Flowers-Curve/)
 
 ## Introduction
-
-Flowers curve is a type of Chinese art invented by Binglie Yang. In practice, these curves are drawn by moving a small gear inside a ring gear
+ 
+Flowers curve ([Spirograph](https://en.wikipedia.org/wiki/Spirograph)) is a type of toy invented by Denys Fisher, a British Engineer, and later independently invented by Binglie Yang, a Chinese inventor. In practice, these curves are drawn by moving a small gear inside a ring gear
 
 ![demo](docs/demo.jpg)
 
