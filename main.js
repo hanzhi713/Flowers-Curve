@@ -262,6 +262,37 @@ function loadConfig(files) {
     }
 }
 
+/**
+ * @return Number
+ * Get the *real* width of the pattern produced
+ * */
+function getRealSize(){
+    var maxDotDist = 0;
+    var maxDot = null;
+    for (var key in dots) {
+        var dotDist = Math.abs(dots[key].distance);
+        if (dotDist > maxDotDist){
+            maxDot = dots[key];
+            maxDotDist = dotDist;
+        }
+    }
+    var innerCircleRadius = +innerCircleParam.value;
+    var outerCircleRadius = +outerCircleParam.value;
+    var skeletonLength = outerCircleRadius - innerCircleRadius + maxDotDist + maxDot.size + 5;
+    if (innerCircleRadius > 0)
+        return Math.max(outerCircleRadius + 2, skeletonLength) * 2;
+    else
+        return Math.max(outerCircleRadius - innerCircleRadius * 2 + 2, skeletonLength) * 2;
+}
+
+/**
+ * @param {Number} realSize
+ * @return Number
+ * */
+function getTranslation(realSize){
+    return realSize / 2 - topCanvas.width / 2;
+}
+
 function saveToPNG() {
     var innerCircleRadius = +innerCircleParam.value;
     var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, +outerCircleParam.value);
@@ -288,7 +319,11 @@ function saveToPNG() {
             tempCxt.fillStyle = bgColor;
             tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
         }
-        tempCxt.scale(pngSize / topCanvas.width, pngSize / topCanvas.width);
+
+        var realPatternSize = getRealSize(), translation = getTranslation(realPatternSize);
+        tempCxt.scale(pngSize / realPatternSize, pngSize / realPatternSize);
+        tempCxt.translate(translation, translation);
+
         tempCxt.drawImage(bottomCanvas, 0, 0);
         tempCxt.drawImage(topCanvas, 0, 0);
         tempCanvas.toBlobHD(function (blob) {
@@ -308,8 +343,6 @@ function saveToGIF() {
         height: frameSize
     });
 
-    var outerCircleRadius = +outerCircleParam.value;
-    var innerCircleRadius = +innerCircleParam.value;
     stopDrawing();
     flag.stop = false;
 
@@ -326,10 +359,15 @@ function saveToGIF() {
         tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
     }
 
-    tempCxt.scale(frameSize / topCanvas.width, frameSize / topCanvas.height);
+    var realPatternSize = getRealSize(), translation = getTranslation(realPatternSize);
+    tempCxt.scale(frameSize / realPatternSize, frameSize / realPatternSize);
+    tempCxt.translate(translation, translation);
 
     if (clearBeforeDrawingCheck.checked)
         clear();
+
+    var outerCircleRadius = +outerCircleParam.value;
+    var innerCircleRadius = +innerCircleParam.value;
 
     var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, outerCircleRadius);
     if (outerCircleCheck.checked)
@@ -340,7 +378,15 @@ function saveToGIF() {
     ruler.showSkeleton = skeletonCheck.checked;
     ruler.reverse = reverseDirectionCheck.checked;
 
-    var radiiDiff = outerCircle.radius - ruler.circle.radius;
+    var radiiDiff;
+    if (ruler.circle.radius < 0){
+        ruler.circle.radius = -ruler.circle.radius;
+        ruler.reverse = !ruler.reverse;
+        radiiDiff = outerCircle.radius + ruler.circle.radius;
+    }
+    else
+        radiiDiff = outerCircle.radius - ruler.circle.radius;
+
     var drawingInterval = +drawingDelayParam.value;
     var innerCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
     var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
@@ -446,7 +492,7 @@ function previewRuler() {
     var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, +outerCircleParam.value);
     outerCircle.draw(bottomCxt);
 
-    var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - +innerCircleParam.value, +innerCircleParam.value), getDotArray());
+    var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - +innerCircleParam.value, Math.abs(+innerCircleParam.value)), getDotArray());
     ruler.showCircle = true;
     ruler.showSkeleton = true;
     ruler.reverse = reverseDirectionCheck.checked;
@@ -511,6 +557,7 @@ function draw(outerCircle, ruler, drawingInterval, drawingStep, completeness, ca
     var radiiDiff;
     if (ruler.circle.radius < 0){
         ruler.circle.radius = -ruler.circle.radius;
+        ruler.reverse = !ruler.reverse;
         radiiDiff = outerCircle.radius + ruler.circle.radius;
     }
     else
