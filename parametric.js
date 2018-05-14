@@ -70,7 +70,7 @@ window.onchange = function (ev) {
     saveConfigToBrowser();
 };
 
-function disableDrawing(){
+function disableDrawing() {
     document.getElementById('draw').disabled = true;
     var m = document.getElementById('savepng'), n = document.getElementById('savegif');
     m.className = 'dropdown-item disabled';
@@ -81,7 +81,7 @@ function disableDrawing(){
     n.setAttribute('data-target', '#');
 }
 
-function enableDrawing(){
+function enableDrawing() {
     document.getElementById('draw').disabled = false;
     var m = document.getElementById('savepng'), n = document.getElementById('savegif');
     m.className = 'dropdown-item';
@@ -199,6 +199,13 @@ function saveConfigToBrowser() {
 }
 
 function getConfigJSON() {
+    var isLocValid = locArray.length > 0 && locArray[0].length === 6;
+    var cutPointSigns = {};
+    if (isLocValid) {
+        for (var i = 0; i < cutPoints.length; i++)
+            cutPointSigns[cutPoints[i]] = getSign(document.getElementById('c' + i))
+        cutPointSigns[t2Param.value] = getSign(document.getElementById('c' + cutPoints.length));
+    }
     var config = {
         circleRadius: +circleParam.value,
         showSkeleton: skeletonCheck.checked,
@@ -235,7 +242,14 @@ function getConfigJSON() {
         pngWidth: +pngWidthParam.value,
         pngHeight: +pngHeightParam.value,
         pngTransparent: pngTransparentCheck.checked,
-        pngBgColor: pngBgColorParam.value
+        pngBgColor: pngBgColorParam.value,
+
+        locArray: isLocValid ? locArray.map(function (value) {
+            return value.map(function (v) {
+                return +(v.toFixed(3))
+            })
+        }) : undefined,
+        cutPointSigns: isLocValid ? cutPointSigns : undefined
     };
     return JSON.stringify(config);
 }
@@ -291,6 +305,50 @@ function parseConfigJSON(json) {
         for (var key in dots) {
             addDotHelper(key, dots[key].size, dots[key].color, dots[key].distance, Math.round(180 * dots[key].rotOffset / Math.PI));
         }
+
+        if (obj.locArray !== undefined) {
+            locArray = obj.locArray;
+            cutPoints = [];
+            var g = document.getElementById('sign-adjust');
+            g.innerHTML = '';
+            for (var i in obj.cutPointSigns) {
+                cutPoints.push(+i);
+                var e = document.createElement('button');
+                e.id = 'c' + i;
+                e.type = 'button';
+                e.className = 'btn btn-secondary btn-sm';
+                e.innerHTML = (+i).toFixed(2) + (obj.cutPointSigns[i] === 1 ? '+' : '-');
+                g.appendChild(e);
+
+                e.onclick = function (ev) {
+                    var ih = ev.target.innerHTML;
+                    var sign = ih[ih.length - 1];
+                    if (sign === '+')
+                        ev.target.innerHTML = ih.substring(0, ih.length - 1) + '-';
+                    else
+                        ev.target.innerHTML = ih.substring(0, ih.length - 1) + '+';
+                    saveConfigToBrowser();
+                };
+            }
+            var topCxt = topCanvas.getContext('2d');
+            var bottomCxt = bottomCanvas.getContext('2d');
+            var funcCxt = funcCanvas.getContext('2d');
+            funcCxt.strokeStyle = '#000000';
+            setTransform([topCxt, bottomCxt, funcCxt]);
+
+            funcCxt.moveTo(locArray[0][0], locArray[0][1]);
+            for (i = 1; i < locArray.length; i++)
+                funcCxt.lineTo(locArray[i][0], locArray[i][1]);
+            funcCxt.stroke();
+
+            var ruler = new Ruler(new Circle(locArray[0][2] + locArray[0][0], locArray[0][3] + locArray[0][1], +circleParam.value * +scaleParam.value), getDotArray());
+            ruler.showSkeleton = true;
+            ruler.reverse = reverseDirectionCheck.checked;
+            ruler.draw(topCxt, bottomCxt);
+
+            enableDrawing();
+        }
+
     } catch (e) {
         alert(e);
     }
@@ -386,6 +444,15 @@ function saveToPNG() {
 
 }
 
+/**
+ * @param {HTMLElement} element
+ * */
+function getSign(element) {
+    if (element === null || element === undefined) return 1;
+    var x = element.innerHTML[element.innerHTML.length - 1];
+    return x === '+' ? 1 : -1;
+}
+
 function saveToGIF() {
     var frameSize = +gifSizeParam.value;
     var transparent = gifTransparentCheck.checked;
@@ -443,11 +510,6 @@ function saveToGIF() {
     progressbar.width('0%');
 
     var se = document.getElementById('c0');
-    var getSign = function (element) {
-        if (element === null || element === undefined) return 1;
-        var x = element.innerHTML[element.innerHTML.length - 1];
-        return x === '+' ? 1 : -1;
-    };
 
     var drawingInterval = +drawingDelayParam.value;
     var sign = se === undefined ? 1 : getSign(se);
@@ -568,6 +630,7 @@ function previewRuler() {
     ruler.reverse = reverseDirectionCheck.checked;
     ruler.draw(topCxt, bottomCxt);
     enableDrawing();
+    saveConfigToBrowser();
 }
 
 function clear() {
@@ -659,7 +722,6 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
         var rotAngle = arcLength / radius;
         locations[counter] = [x * scale, y * scale, delX * scale, delY * scale, rotAngle, t];
     }
-    console.log(locations);
     var g = document.getElementById('sign-adjust');
     g.innerHTML = '';
     var handler = function (ev) {
@@ -669,6 +731,7 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
             ev.target.innerHTML = ih.substring(0, ih.length - 1) + '-';
         else
             ev.target.innerHTML = ih.substring(0, ih.length - 1) + '+';
+        saveConfigToBrowser();
     };
     for (var i in cutPoints) {
         var e = document.createElement('button');
