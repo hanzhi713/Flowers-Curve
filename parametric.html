@@ -283,9 +283,37 @@
                     </td>
                 </tr>
                 <tr>
-                    <td><label for="circleRadius">Circle radius</label></td>
                     <td>
-                        <input type="number" id="circleRadius" style="width: 50px" value="120" step="1" max="600"
+                        <label for="circleRadius">Circle radius</label>
+                        <button type="button" class="btn btn-sm" data-toggle="modal" data-target="#radiusSetter"><i class="fas fa-hand-point-left"></i></button>
+                        <div class="modal fade" id="radiusSetter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                            <div class="modal-dialog modal-dialog-centered" style="width: 400px"  role="document">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="setterTitle">Generate a suitable radius</h5>
+                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <table class="table" style="font-size: large; width: 320px; margin: auto auto">
+                                            <tr>
+                                                <td><label for="radiusMultiple">Multiples</label></td>
+                                                <td>
+                                                    <input id="radiusMultiple" type="number" step="0.5" min="0" max="100" value="10"/>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-primary" data-dismiss="modal" onclick="generateRadius()">Generate</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td>
+                        <input type="number" id="circleRadius" style="width: 50px" value="10" step="0.01" max="600"
                                min="10" onclick="adjustDotDistanceCap(this)">
                     </td>
                 </tr>
@@ -311,7 +339,7 @@
                     </td>
                     <td>
                         <input type="number" id="step" style="width: 60px"
-                               value="0.01" step="0.01" max="0.5" min="0.01">
+                               value="0.01" step="0.001" max="0.5" min="0.001">
                     </td>
                 </tr>
                 <tr>
@@ -525,7 +553,7 @@
         'Drawing: ': 'Drawing: '
     };
 </script>
-<script src="parametric.js?ver=1"></script>
+<script src="parametric.js?ver=4"></script>
 <div style="width: 540px; margin: auto auto">
     <span style="font-size:18px;">
         Developed by <a href="https://github.com/hanzhi713" target="_blank">Hanzhi Zhou</a>.

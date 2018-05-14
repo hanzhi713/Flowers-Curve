@@ -22,13 +22,6 @@ var skeletonCheck = document.getElementById('showSk');
 var functionCheck = document.getElementById('showFunc');
 var reverseDirectionCheck = document.getElementById('direction');
 
-var effectors = [xParam, yParam, t1Param, t2Param, dxParam, dyParam, scaleParam, circleParam, drawingStepParam];
-for (var i in effectors)
-    effectors[i].onchange = function () {
-        locArray = [];
-        disableDrawing();
-    };
-
 var dotSizeMinParam = document.getElementById('dotSizeMin');
 var dotSizeMaxParam = document.getElementById('dotSizeMax');
 var dotDistanceMinParam = document.getElementById('dotDistanceMin');
@@ -64,10 +57,17 @@ var cutPoints = [];
 
 window.onload = function (ev) {
     parseConfigJSON(localStorage.getItem('cache'));
-};
 
-window.onchange = function (ev) {
-    saveConfigToBrowser();
+    window.onchange = function (ev) {
+        saveConfigToBrowser();
+    };
+
+    var effectors = [xParam, yParam, t1Param, t2Param, dxParam, dyParam, scaleParam, circleParam, drawingStepParam];
+    for (var i in effectors)
+        effectors[i].onchange = function () {
+            locArray = [];
+            disableDrawing();
+        };
 };
 
 function disableDrawing() {
@@ -110,14 +110,14 @@ function addDot() {
     // if (dotDist > dotDistCap)
     //     alert('Dot distance should be no greater than the inner circle radius');
     // else
-    addDotHelper((new Date()).valueOf().toString(), dotSize, dotColor, dotDist, dotRot);
+    addDotHelper((new Date()).valueOf().toString(), dotSize, dotColor, dotDist, dotRot, true);
 }
 
 /**
  * return a random integer in [min, max]
- * @param {number} min
- * @param {number} max
- * @return number
+ * @param {Number} min
+ * @param {Number} max
+ * @return Number
  * */
 function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
@@ -131,10 +131,10 @@ function randomDot() {
     var dotColor = '#' + (Math.floor(Math.random() * 256 * 256 * 256)).toString(16);
     var dotDist = randInt(+dotDistanceMinParam.value, randDotDistMax); //> dotDistCap ? dotDistCap : randDotDistMax);
     var dotRot = randInt(+dotRotMinParam.value, +dotRotMaxParam.value);
-    addDotHelper((new Date()).valueOf().toString(), dotSize, dotColor, dotDist, dotRot);
+    addDotHelper((new Date()).valueOf().toString(), dotSize, dotColor, dotDist, dotRot, true);
 }
 
-function addDotHelper(currentTime, dotSize, dotColor, dotDist, dotRot) {
+function addDotHelper(currentTime, dotSize, dotColor, dotDist, dotRot, save) {
     dots[currentTime] = new Dot(dotSize, dotColor, dotDist, dotRot);
     $('#settings').append("<tr id=\"" + currentTime + "\">" +
         "                    <td onclick='preModify(this)' data-toggle=\"modal\" data-target=\"#DotModalCenter\">Distance: " + dotDist + "&nbsp;&nbsp;Color:" +
@@ -148,7 +148,8 @@ function addDotHelper(currentTime, dotSize, dotColor, dotDist, dotRot) {
         "                    </th>" +
         "                </tr>"
     );
-    saveConfigToBrowser();
+    if (save)
+        saveConfigToBrowser();
 }
 
 function preModify(td) {
@@ -204,7 +205,7 @@ function getConfigJSON() {
     if (isLocValid) {
         for (var i = 0; i < cutPoints.length; i++)
             cutPointSigns[cutPoints[i]] = getSign(document.getElementById('c' + i))
-        cutPointSigns[t2Param.value] = getSign(document.getElementById('c' + cutPoints.length));
+        //cutPointSigns[t2Param.value] = getSign(document.getElementById('c' + cutPoints.length));
     }
     var config = {
         circleRadius: +circleParam.value,
@@ -303,7 +304,7 @@ function parseConfigJSON(json) {
             pngBgColorParam.disabled = true;
 
         for (var key in dots) {
-            addDotHelper(key, dots[key].size, dots[key].color, dots[key].distance, Math.round(180 * dots[key].rotOffset / Math.PI));
+            addDotHelper(key, dots[key].size, dots[key].color, dots[key].distance, Math.round(180 * dots[key].rotOffset / Math.PI), false);
         }
 
         if (obj.locArray !== undefined) {
@@ -311,13 +312,14 @@ function parseConfigJSON(json) {
             cutPoints = [];
             var g = document.getElementById('sign-adjust');
             g.innerHTML = '';
+            var counter = 0;
             for (var i in obj.cutPointSigns) {
                 cutPoints.push(+i);
                 var e = document.createElement('button');
-                e.id = 'c' + i;
+                e.id = 'c' + counter;
                 e.type = 'button';
                 e.className = 'btn btn-secondary btn-sm';
-                e.innerHTML = (+i).toFixed(2) + (obj.cutPointSigns[i] === 1 ? '+' : '-');
+                e.innerHTML = (+i).toFixed(2) + (obj.cutPointSigns[i] == 1 ? '+' : '-');
                 g.appendChild(e);
 
                 e.onclick = function (ev) {
@@ -329,6 +331,7 @@ function parseConfigJSON(json) {
                         ev.target.innerHTML = ih.substring(0, ih.length - 1) + '+';
                     saveConfigToBrowser();
                 };
+                counter ++;
             }
             var topCxt = topCanvas.getContext('2d');
             var bottomCxt = bottomCanvas.getContext('2d');
@@ -348,7 +351,6 @@ function parseConfigJSON(json) {
 
             enableDrawing();
         }
-
     } catch (e) {
         alert(e);
     }
@@ -430,7 +432,6 @@ function saveToPNG() {
             tempCxt.fillStyle = bgColor;
             tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
         }
-        //setTransform([tempCxt]);
 
         tempCxt.scale(pngWidth / topCanvas.width, pngHeight / topCanvas.height);
         tempCxt.drawImage(funcCanvas, 0, 0);
@@ -533,9 +534,11 @@ function saveToGIF() {
                                 tempCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
                             else
                                 tempCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
+
                             tempCxt.drawImage(funcCanvas, 0, 0);
                             tempCxt.drawImage(bottomCanvas, 0, 0);
                             tempCxt.drawImage(topCanvas, 0, 0);
+
                             gif.addFrame(tempCxt, {
                                 copy: true,
                                 delay: frameDelay //frameInterval + frameInterval * drawingStep
@@ -591,6 +594,9 @@ function saveToGIF() {
     )(i, delay + drawingInterval));
 }
 
+/**
+ * @return Array
+ * */
 function getDotArray() {
     var dotArray = [];
     for (var key in dots) {
@@ -599,14 +605,18 @@ function getDotArray() {
     return dotArray;
 }
 
+/**
+ * @param {Array} cxts
+ * */
 function setTransform(cxts) {
-    var sx = +dxParam.value; // actually is dx
+    var sx = +dxParam.value;
     var sy = +dyParam.value;
     for (var i = 0; i < cxts.length; i++)
         cxts[i].setTransform(1, 0, 0, -1, sx + 320, 320 - sy);
 }
 
 function previewRuler() {
+    stopDrawing();
     var radius = +circleParam.value;
     var scale = +scaleParam.value;
     locArray = calculateLocations(+t1Param.value, +t2Param.value, nerdamer(xParam.value), nerdamer(yParam.value), +drawingStepParam.value, radius, scale);
@@ -677,27 +687,40 @@ function caller(callback) {
 }
 
 /**
- * @param {number} t1
- * @param {number} t2
  * @param {nerdamer} xExp
  * @param {nerdamer} yExp
- * @param {number} step
- * @param {number} radius
- * @param {number} scale
+ * @return Array
  * */
-function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
-    var totalSteps = Math.round((t2 - t1) / step);
+function buildNecessaryExpressions(xExp, yExp) {
     var dx = nerdamer.diff(xExp);
     var dy = nerdamer.diff(yExp);
 
-    var arcLengthExp = nerdamer('sqrt((' + dx.text() + ')^2 + (' + dy.text() + ')^2)').buildFunction(['t']);
+    var arcLengthExp = nerdamer('sqrt((' + dx.text() + ')^2 + (' + dy.text() + ')^2)');
+    return [dx.buildFunction(['t']), dy.buildFunction(['t']), arcLengthExp.buildFunction(['t'])];
+}
+
+/**
+ * @param {Number} t1
+ * @param {Number} t2
+ * @param {nerdamer} xExp
+ * @param {nerdamer} yExp
+ * @param {Number} step
+ * @param {Number} radius
+ * @param {Number} scale
+ * @return Array
+ * */
+function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
+    var totalSteps = Math.round((t2 - t1) / step);
     //var arcLengthInt = nerdamer('defint(sqrt((' + dx.text() + ')^2 + (' + dy.text() + ')^2), ' + t1 + ', t2, t)');
 
     var locations = new Array(totalSteps);
     cutPoints = [];
 
-    dy = dy.buildFunction(['t']);
-    dx = dx.buildFunction(['t']);
+    var exps = buildNecessaryExpressions(xExp, yExp);
+    var dx = exps[0];
+    var dy = exps[1];
+    var arcLengthExp = exps[2];
+
     xExp = xExp.buildFunction(['t']);
     yExp = yExp.buildFunction(['t']);
 
@@ -709,7 +732,7 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
         var normal = -dx(t) / dy(t);
 
         if (Math.sign(normal) * Math.sign(lastNormal) === -1 && Math.abs(normal - lastNormal) < 1)
-            cutPoints.push(t);
+            cutPoints.push(t - step);
 
         lastNormal = normal;
         var arcLength = integrate(arcLengthExp, t1, t, counter + 10);
@@ -722,6 +745,7 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
         var rotAngle = arcLength / radius;
         locations[counter] = [x * scale, y * scale, delX * scale, delY * scale, rotAngle, t];
     }
+    cutPoints.push(t2);
     var g = document.getElementById('sign-adjust');
     g.innerHTML = '';
     var handler = function (ev) {
@@ -742,19 +766,21 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
         g.appendChild(e);
         e.onclick = handler;
     }
-    e = document.createElement('button');
-    e.id = 'c' + (cutPoints.length);
-    e.type = 'button';
-    e.className = 'btn btn-secondary btn-sm';
-    e.innerHTML = t2.toFixed(2) + '+';
-    g.appendChild(e);
-    e.onclick = handler;
     return locations;
+}
+
+function generateRadius() {
+    var multiple = +document.getElementById('radiusMultiple').value;
+    var exps = buildNecessaryExpressions(nerdamer(xParam.value), nerdamer(yParam.value));
+    var t1 = +t1Param.value, t2 = +t2Param.value;
+    var arcLength = integrate(exps[2], t1, t2, Math.round((t2 - t1) / (+drawingStepParam.value)) + 10);
+    console.log(arcLength);
+    circleParam.value = (arcLength / multiple / TwoPI);
 }
 
 /**
  * @param {Ruler} ruler
- * @param {number} drawingInterval
+ * @param {Number} drawingInterval
  * @param {Function} callback
  * */
 function draw(ruler, drawingInterval, callback) {
@@ -790,7 +816,7 @@ function draw(ruler, drawingInterval, callback) {
     var sign = se === undefined ? 1 : getSign(se);
     for (var i = 0, delay = 0, counter = 0, cut = 0; i < locArray.length; i++, delay += drawingInterval, counter++) {
         if (cut < cutPoints.length) {
-            if ((locArray[i][5] - cutPoints[cut]) > 0.000001) {
+            if ((locArray[i][5] - cutPoints[cut]) > 0) {
                 cut++;
                 sign = getSign(document.getElementById('c' + cut));
             }
@@ -843,9 +869,9 @@ function integrate(f, a, b, n) {
 }
 
 /**
- * @param {number} x
- * @param {number} y
- * @return number
+ * @param {Number} x
+ * @param {Number} y
+ * @return Number
  * */
 function lcm(x, y) {
     var a = x, b = y;
@@ -858,10 +884,10 @@ function lcm(x, y) {
 }
 
 /**
- * @param {number} x
- * @param {number} y
- * @param {number} radius
- * @param {number} rad
+ * @param {Number} x
+ * @param {Number} y
+ * @param {Number} radius
+ * @param {Number} rad
  * @return Array
  * */
 function rad2cor(x, y, radius, rad) {
@@ -972,8 +998,8 @@ function Ruler(circle, dots) {
         }
     };
     /**
-     * @param {number} x
-     * @param {number} y
+     * @param {Number} x
+     * @param {Number} y
      * */
     this.moveTo = function (x, y) {
         this.circle.moveTo(x, y);
@@ -982,10 +1008,10 @@ function Ruler(circle, dots) {
 
 /**
  * @constructor
- * @param {number} size
+ * @param {Number} size
  * @param {string} color
- * @param {number} distance
- * @param {number} rotOffset
+ * @param {Number} distance
+ * @param {Number} rotOffset
  * */
 function Dot(size, color, distance, rotOffset) {
     this.size = size;
@@ -1027,8 +1053,8 @@ function Circle(x, y, radius) {
     };
 
     /**
-     * @param {number} x
-     * @param {number} y
+     * @param {Number} x
+     * @param {Number} y
      * */
     this.moveTo = function (x, y) {
         this.x = x;
