@@ -6,6 +6,7 @@ var TwoPI = Math.PI * 2;
 var topCanvas = document.getElementById('canvas-top');
 var bottomCanvas = document.getElementById('canvas-bottom');
 var funcCanvas = document.getElementById('canvas-func');
+var tempCanvas = document.getElementById('canvas-temp');
 var xParam = document.getElementById('x=');
 var yParam = document.getElementById('y=');
 var t1Param = document.getElementById('t1');
@@ -18,7 +19,15 @@ var clearBeforeDrawingCheck = document.getElementById('clearBeforeDrawing');
 var drawingStepParam = document.getElementById('step');
 var drawingDelayParam = document.getElementById('delay');
 var skeletonCheck = document.getElementById('showSk');
+var functionCheck = document.getElementById('showFunc');
 var reverseDirectionCheck = document.getElementById('direction');
+
+var effectors = [xParam, yParam, t1Param, t2Param, dxParam, dyParam, scaleParam, circleParam, drawingStepParam];
+for (var i in effectors)
+    effectors[i].onchange = function () {
+        locArray = [];
+        disableDrawing();
+    };
 
 var dotSizeMinParam = document.getElementById('dotSizeMin');
 var dotSizeMaxParam = document.getElementById('dotSizeMax');
@@ -41,7 +50,8 @@ var gifFrameDelayParam = document.getElementById('f-delay');
 var gifQualityParam = document.getElementById('f-quality');
 var gifLastFrameDelayParam = document.getElementById('f-lastdelay');
 
-var pngSizeParam = document.getElementById('p-size');
+var pngWidthParam = document.getElementById('p-width');
+var pngHeightParam = document.getElementById('p-height');
 var pngTransparentCheck = document.getElementById('p-transparent');
 var pngBgColorParam = document.getElementById('p-bgcolor');
 
@@ -51,7 +61,6 @@ var currentJobs = [];
 
 var locArray = [];
 var cutPoints = [];
-var ready = false;
 
 window.onload = function (ev) {
     parseConfigJSON(localStorage.getItem('cache'));
@@ -59,9 +68,29 @@ window.onload = function (ev) {
 
 window.onchange = function (ev) {
     saveConfigToBrowser();
-    ready = false;
-    document.getElementById('draw').disabled = true;
 };
+
+function disableDrawing(){
+    document.getElementById('draw').disabled = true;
+    var m = document.getElementById('savepng'), n = document.getElementById('savegif');
+    m.className = 'dropdown-item disabled';
+    n.className = 'dropdown-item disabled';
+    m.style.color = '#6c757d';
+    n.style.color = '#6c757d';
+    m.setAttribute('data-target', '#');
+    n.setAttribute('data-target', '#');
+}
+
+function enableDrawing(){
+    document.getElementById('draw').disabled = false;
+    var m = document.getElementById('savepng'), n = document.getElementById('savegif');
+    m.className = 'dropdown-item';
+    n.className = 'dropdown-item';
+    m.style.color = '#000';
+    n.style.color = '#000';
+    m.setAttribute('data-target', '#PNGModalCenter');
+    n.setAttribute('data-target', '#GIFModalCenter');
+}
 
 function removeDot(id) {
     delete dots[id];
@@ -173,6 +202,7 @@ function getConfigJSON() {
     var config = {
         circleRadius: +circleParam.value,
         showSkeleton: skeletonCheck.checked,
+        showFunction: functionCheck.checked,
         xParam: xParam.value,
         yParam: yParam.value,
         t1: +t1Param.value,
@@ -202,7 +232,8 @@ function getConfigJSON() {
         frameInterval: +gifIntervalParam.value,
         lastFrameDelay: +gifLastFrameDelayParam.value,
 
-        pngSize: +pngSizeParam.value,
+        pngWidth: +pngWidthParam.value,
+        pngHeight: +pngHeightParam.value,
         pngTransparent: pngTransparentCheck.checked,
         pngBgColor: pngBgColorParam.value
     };
@@ -221,7 +252,8 @@ function parseConfigJSON(json) {
         dxParam.value = obj.dx === undefined ? 0 : obj.dx;
         dyParam.value = obj.dy === undefined ? 0 : obj.dy;
         scaleParam.value = obj.scale === undefined ? 1 : obj.scale;
-        skeletonCheck.checked = obj.showSkeleton === undefined ? false : obj.showSkeleton;
+        skeletonCheck.checked = obj.showSkeleton === undefined ? true : obj.showSkeleton;
+        functionCheck.checked = obj.showFunction === undefined ? true : obj.showFunction;
         clearBeforeDrawingCheck.checked = obj.clearBeforeDrawing === undefined ? true : obj.clearBeforeDrawing;
         drawingStepParam.value = obj.drawingStep === undefined ? 0.005 : obj.drawingStep;
         drawingDelayParam.value = obj.drawingDelay === undefined ? 2 : obj.drawingDelay;
@@ -248,7 +280,8 @@ function parseConfigJSON(json) {
         gifIntervalParam.value = obj.frameInterval === undefined ? 40 : obj.frameInterval;
         gifLastFrameDelayParam.value = obj.lastFrameDelay === undefined ? 1000 : obj.lastFrameDelay;
 
-        pngSizeParam.value = obj.pngSize === undefined ? 640 : obj.pngSize;
+        pngWidthParam.value = obj.pngWidth === undefined ? 640 : obj.pngWidth;
+        pngHeightParam.value = obj.pngHeight === undefined ? 640 : obj.pngHeight;
         pngTransparentCheck.checked = obj.pngTransparent === undefined ? false : obj.pngTransparent;
         pngBgColorParam.value = obj.pngBgColor === undefined ? '#FFFFFF' : obj.pngBgColor;
 
@@ -278,79 +311,86 @@ function loadConfig(files) {
     }
 }
 
-/**
- * @return Number
- * Get the *real* width of the pattern produced
- * */
-function getRealSize() {
-    var maxDotDist = 0;
-    var maxDot = null;
-    for (var key in dots) {
-        var dotDist = Math.abs(dots[key].distance);
-        if (dotDist > maxDotDist) {
-            maxDot = dots[key];
-            maxDotDist = dotDist;
-        }
-    }
-    var innerCircleRadius = +innerCircleParam.value;
-    var outerCircleRadius = +outerCircleParam.value;
-    var skeletonLength = outerCircleRadius - innerCircleRadius + maxDotDist + maxDot.size + 5;
-    if (innerCircleRadius > 0)
-        return Math.max(outerCircleRadius + 2, skeletonLength) * 2;
-    else
-        return Math.max(outerCircleRadius - innerCircleRadius * 2 + 2, skeletonLength) * 2;
-}
+// /**
+//  * @return Array
+//  * */
+// function getRealBounds() {
+//     var maxDotDist = 0;
+//     var maxDot = null;
+//     for (var key in dots) {
+//         var dotDist = Math.abs(dots[key].distance);
+//         if (dotDist > maxDotDist) {
+//             maxDot = dots[key];
+//             maxDotDist = dotDist;
+//         }
+//     }
+//     var radius = +circleParam.value * +scaleParam.value;
+//     var minX = Infinity, maxX = -Infinity;
+//     var minY = Infinity, maxY = -Infinity;
+//     for (var i = 0; i < locArray.length; i++) {
+//         if (locArray[i][0] < minX)
+//             minX = locArray[i][0];
+//         if (locArray[i][0] > maxX)
+//             maxX = locArray[i][0];
+//         if (locArray[i][1] < minY)
+//             minY = locArray[i][1];
+//         if (locArray[i][1] > maxY)
+//             maxY = locArray[i][1];
+//     }
+//     return [minX - maxDotDist * 2, maxX + maxDotDist * 2, minY - maxDotDist * 2, maxY + maxDotDist * 2];
+// }
 
-/**
- * @param {Number} realSize
- * @return Number
- * */
-function getTranslation(realSize) {
-    return realSize / 2 - topCanvas.width / 2;
-}
+// /**
+//  * @param {Number} realSize
+//  * @return Number
+//  * */
+// function getTranslation(realSize) {
+//     return realSize / 2 - topCanvas.width / 2;
+// }
 
 function saveToPNG() {
-    var innerCircleRadius = +innerCircleParam.value;
-    var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, +outerCircleParam.value);
+    var circleRadius = +circleParam.value;
 
-    var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
-    ruler.showCircle = innerCircleCheck.checked;
+    var ruler = new Ruler(new Circle(320, 320, +scaleParam.value * circleRadius), getDotArray());
     ruler.showSkeleton = skeletonCheck.checked;
     ruler.reverse = reverseDirectionCheck.checked;
 
     stopDrawing();
     flag.stop = false;
 
-    draw(outerCircle, ruler, 0, +drawingStepParam.value, +completenessParam.value, function () {
-        var pngSize = +pngSizeParam.value;
+    draw(ruler, +drawingDelayParam.value, function () {
+        var pngWidth = +pngWidthParam.value;
+        var pngHeight = +pngHeightParam.value;
         var transparent = pngTransparentCheck.checked;
         var bgColor = pngBgColorParam.value;
 
-        var funcCanvas = document.getElementById('canvas-func');
-        funcCanvas.width = pngSize;
-        funcCanvas.height = pngSize;
-        var funcCxt = funcCanvas.getContext('2d');
+        tempCanvas.width = pngWidth;
+        tempCanvas.height = pngHeight;
+        var tempCxt = tempCanvas.getContext('2d');
 
         if (!transparent) {
-            funcCxt.fillStyle = bgColor;
-            funcCxt.fillRect(0, 0, funcCanvas.width, funcCanvas.height)
+            tempCxt.fillStyle = bgColor;
+            tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height)
         }
+        //setTransform([tempCxt]);
 
-        var realPatternSize = getRealSize(), translation = getTranslation(realPatternSize);
-        funcCxt.scale(pngSize / realPatternSize, pngSize / realPatternSize);
-        funcCxt.translate(translation, translation);
+        tempCxt.scale(pngWidth / topCanvas.width, pngHeight / topCanvas.height);
+        tempCxt.drawImage(funcCanvas, 0, 0);
+        tempCxt.drawImage(bottomCanvas, 0, 0);
+        tempCxt.drawImage(topCanvas, 0, 0);
 
-        funcCxt.drawImage(bottomCanvas, 0, 0);
-        funcCxt.drawImage(topCanvas, 0, 0);
-        funcCanvas.toBlobHD(function (blob) {
-            saveAs(blob, 'flowers-curve.png');
+        tempCanvas.toBlobHD(function (blob) {
+            saveAs(blob, 'parametric-roulette.png');
         });
     });
+
 }
 
 function saveToGIF() {
     var frameSize = +gifSizeParam.value;
     var transparent = gifTransparentCheck.checked;
+    var frameInterval = +gifIntervalParam.value;
+    var frameDelay = +gifFrameDelayParam.value;
     var gif = new GIF({
         workers: 4,
         quality: +gifQualityParam.value,
@@ -359,109 +399,107 @@ function saveToGIF() {
         height: frameSize
     });
 
+    var circleRadius = +circleParam.value;
+
+    var ruler = new Ruler(new Circle(320, 320, +scaleParam.value * circleRadius), getDotArray());
+    ruler.showSkeleton = skeletonCheck.checked;
+    ruler.reverse = reverseDirectionCheck.checked;
+
     stopDrawing();
     flag.stop = false;
 
     var topCxt = topCanvas.getContext('2d');
     var bottomCxt = bottomCanvas.getContext('2d');
-
-    var funcCanvas = document.getElementById('canvas-func');
-    funcCanvas.width = frameSize;
-    funcCanvas.height = frameSize;
     var funcCxt = funcCanvas.getContext('2d');
 
+    var tempCxt = tempCanvas.getContext('2d');
+    tempCanvas.width = frameSize;
+    tempCanvas.height = frameSize;
+
+
     if (!transparent) {
-        funcCxt.fillStyle = gifBgColorParam.value;
-        funcCxt.fillRect(0, 0, funcCanvas.width, funcCanvas.height);
+        tempCxt.fillStyle = gifBgColorParam.value;
+        tempCxt.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
     }
 
-    var realPatternSize = getRealSize(), translation = getTranslation(realPatternSize);
-    funcCxt.scale(frameSize / realPatternSize, frameSize / realPatternSize);
-    funcCxt.translate(translation, translation);
+    // var realPatternSize = getRealSize(), translation = getTranslation(realPatternSize);
+    tempCxt.scale(frameSize / topCanvas.width, frameSize / topCanvas.height);
+    // funcCxt.translate(translation, translation);
 
-    if (clearBeforeDrawingCheck.checked)
-        clear();
-
-    var outerCircleRadius = +outerCircleParam.value;
-    var innerCircleRadius = +innerCircleParam.value;
-
-    var outerCircle = new Circle(topCanvas.width / 2, topCanvas.height / 2, outerCircleRadius);
-    if (outerCircleCheck.checked)
-        outerCircle.draw(bottomCxt);
-
-    var ruler = new Ruler(new Circle(outerCircle.x, outerCircle.y + outerCircle.radius - innerCircleRadius, innerCircleRadius), getDotArray());
-    ruler.showCircle = innerCircleCheck.checked;
     ruler.showSkeleton = skeletonCheck.checked;
-    ruler.reverse = reverseDirectionCheck.checked;
 
-    var radiiDiff;
-    if (ruler.circle.radius < 0) {
-        ruler.circle.radius = -ruler.circle.radius;
-        ruler.reverse = !ruler.reverse;
-        radiiDiff = outerCircle.radius + ruler.circle.radius;
+    if (clearBeforeDrawingCheck.checked || !ruler.showSkeleton) {
+        clearBottom();
+        clearTop();
     }
-    else
-        radiiDiff = outerCircle.radius - ruler.circle.radius;
 
-    var drawingInterval = +drawingDelayParam.value;
-    var innerCirclePerimeter = ruler.circle.radius * 2 * Math.PI;
-    var outerCirclePerimeter = outerCircleRadius * 2 * Math.PI;
-    var drawingStep = +drawingStepParam.value;
-    var completeness = +completenessParam.value;
-    var totalRotationAngle = completeness * TwoPI * lcm(outerCircleRadius, ruler.circle.radius) / outerCircleRadius;
-    var initialRotation = Math.PI * 1.5;
+    if (!functionCheck.checked)
+        clearFunc();
+
+    setTransform([topCxt, bottomCxt, funcCxt]);
 
     var progressLabel = $('#progressLabel');
     var progressbar = $('#progressbar');
     progressbar.width('0%');
 
-    var frameInterval = +gifIntervalParam.value;
-    var frameDelay = +gifFrameDelayParam.value;
-    for (var i = initialRotation, delay = 0, counter = 0; i < initialRotation + totalRotationAngle; i += drawingStep, delay += drawingInterval, counter += 1) {
-        currentJobs.push((function (i, delay, counter) {
+    var se = document.getElementById('c0');
+    var getSign = function (element) {
+        if (element === null || element === undefined) return 1;
+        var x = element.innerHTML[element.innerHTML.length - 1];
+        return x === '+' ? 1 : -1;
+    };
+
+    var drawingInterval = +drawingDelayParam.value;
+    var sign = se === undefined ? 1 : getSign(se);
+    for (var i = 0, delay = 0, counter = 0, cut = 0; i < locArray.length; i++, delay += drawingInterval, counter++) {
+        if (cut < cutPoints.length) {
+            if ((locArray[i][5] - cutPoints[cut]) > 0.000001) {
+                cut++;
+                sign = getSign(document.getElementById('c' + cut));
+            }
+        }
+        currentJobs.push((function (i, delay, counter, sign) {
                 return setTimeout(function () {
                     if (!flag.stop) {
                         ruler.erase(bottomCxt);
-                        if (outerCircleCheck.checked)
-                            outerCircle.draw(bottomCxt);
-
-                        var newPos = rad2cor(outerCircle.x, outerCircle.y, radiiDiff, i);
-                        ruler.moveTo(newPos[0], newPos[1]);
-                        ruler.angle = (i - initialRotation) * outerCirclePerimeter / innerCirclePerimeter;
+                        ruler.moveTo(locArray[i][0] + sign * locArray[i][2], locArray[i][1] + sign * locArray[i][3]);
+                        ruler.angle = locArray[i][4];
                         ruler.draw(topCxt, bottomCxt);
 
                         if (counter % frameInterval === 0) {
                             if (transparent)
-                                funcCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                                tempCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
                             else
-                                funcCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
-                            funcCxt.drawImage(bottomCanvas, 0, 0);
-                            funcCxt.drawImage(topCanvas, 0, 0);
-                            gif.addFrame(funcCxt, {
+                                tempCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
+                            tempCxt.drawImage(funcCanvas, 0, 0);
+                            tempCxt.drawImage(bottomCanvas, 0, 0);
+                            tempCxt.drawImage(topCanvas, 0, 0);
+                            gif.addFrame(tempCxt, {
                                 copy: true,
                                 delay: frameDelay //frameInterval + frameInterval * drawingStep
                             });
 
-                            var progress = (i - initialRotation) / totalRotationAngle * 100;
+                            var progress = i / locArray.length * 100;
                             progressbar.width(progress + '%');
-                            progressLabel.text(lan['Drawing: '] + progress.toFixed(1) + '%');
+                            progressLabel.text(lan['Drawing: '] + 't = ' + locArray[i][5].toFixed(2) + ', ' + progress.toFixed(1) + '%');
                         }
                     }
                 }, delay);
             }
-        )(i, delay, counter));
+        )(i, delay, counter, sign));
     }
     currentJobs.push((function (i, delay) {
             return setTimeout(function () {
                 if (!flag.stop) {
                     if (transparent)
-                        funcCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
+                        tempCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
                     else
-                        funcCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
+                        tempCxt.fillRect(0, 0, topCanvas.width, topCanvas.height);
 
-                    funcCxt.drawImage(bottomCanvas, 0, 0);
-                    funcCxt.drawImage(topCanvas, 0, 0);
-                    gif.addFrame(funcCxt, {
+                    tempCxt.drawImage(funcCanvas, 0, 0);
+                    tempCxt.drawImage(bottomCanvas, 0, 0);
+                    tempCxt.drawImage(topCanvas, 0, 0);
+                    gif.addFrame(tempCxt, {
                         copy: true,
                         delay: +gifLastFrameDelayParam.value
                     });
@@ -481,7 +519,7 @@ function saveToGIF() {
                     });
 
                     gif.on('finished', function (blob) {
-                        saveAs(blob, 'flowers-curve.gif');
+                        saveAs(blob, 'parametric-roulette.gif');
                     });
 
                     gif.render();
@@ -521,17 +559,15 @@ function previewRuler() {
     setTransform([topCxt, bottomCxt, funcCxt]);
 
     funcCxt.moveTo(locArray[0][0], locArray[0][1]);
-    for (var i = 1; i < locArray.length; i++) {
+    for (var i = 1; i < locArray.length; i++)
         funcCxt.lineTo(locArray[i][0], locArray[i][1]);
-    }
     funcCxt.stroke();
 
     var ruler = new Ruler(new Circle(locArray[0][2] + locArray[0][0], locArray[0][3] + locArray[0][1], radius * scale), getDotArray());
     ruler.showSkeleton = true;
     ruler.reverse = reverseDirectionCheck.checked;
     ruler.draw(topCxt, bottomCxt);
-    ready = true;
-    document.getElementById('draw').disabled = false;
+    enableDrawing();
 }
 
 function clear() {
@@ -606,7 +642,7 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
     var previousLower = t1;
     var previousArcLength = 0;
 
-    for (var t = t1, counter = 0; t < t2; t += step, counter ++) {
+    for (var t = t1, counter = 0; t < t2; t += step, counter++) {
         var normal = -dx(t) / dy(t);
 
         if (Math.sign(normal) * Math.sign(lastNormal) === -1 && Math.abs(normal - lastNormal) < 1)
@@ -622,7 +658,6 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
 
         var rotAngle = arcLength / radius;
         locations[counter] = [x * scale, y * scale, delX * scale, delY * scale, rotAngle, t];
-
     }
     console.log(locations);
     var g = document.getElementById('sign-adjust');
@@ -630,12 +665,10 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
     var handler = function (ev) {
         var ih = ev.target.innerHTML;
         var sign = ih[ih.length - 1];
-        if (sign === '+') {
+        if (sign === '+')
             ev.target.innerHTML = ih.substring(0, ih.length - 1) + '-';
-        }
-        else {
+        else
             ev.target.innerHTML = ih.substring(0, ih.length - 1) + '+';
-        }
     };
     for (var i in cutPoints) {
         var e = document.createElement('button');
@@ -662,21 +695,22 @@ function calculateLocations(t1, t2, xExp, yExp, step, radius, scale) {
  * @param {Function} callback
  * */
 function draw(ruler, drawingInterval, callback) {
+    if (locArray.length < 1)
+        return alert('You must first click \'preview\' to calculate drawing path');
+
     var topCxt = topCanvas.getContext('2d');
     var bottomCxt = bottomCanvas.getContext('2d');
     var funcCxt = funcCanvas.getContext('2d');
 
     ruler.showSkeleton = skeletonCheck.checked;
 
-    if (clearBeforeDrawingCheck.checked) {
+    if (clearBeforeDrawingCheck.checked || !ruler.showSkeleton) {
         clearBottom();
         clearTop();
     }
 
-    if (!ruler.showSkeleton) {
-        clearBottom();
-        clearTop();
-    }
+    if (!functionCheck.checked)
+        clearFunc();
 
     setTransform([topCxt, bottomCxt, funcCxt]);
 
@@ -685,16 +719,12 @@ function draw(ruler, drawingInterval, callback) {
     progressbar.width('0%');
 
     var se = document.getElementById('c0');
-    var sign;
     var getSign = function (element) {
         if (element === null || element === undefined) return 1;
         var x = element.innerHTML[element.innerHTML.length - 1];
         return x === '+' ? 1 : -1;
     };
-    if (se === undefined)
-        sign = 1;
-    else
-        sign = getSign(se);
+    var sign = se === undefined ? 1 : getSign(se);
     for (var i = 0, delay = 0, counter = 0, cut = 0; i < locArray.length; i++, delay += drawingInterval, counter++) {
         if (cut < cutPoints.length) {
             if ((locArray[i][5] - cutPoints[cut]) > 0.000001) {
@@ -705,7 +735,6 @@ function draw(ruler, drawingInterval, callback) {
         currentJobs.push((function (i, delay, counter, sign) {
                 return setTimeout(function () {
                     if (!flag.stop) {
-
                         ruler.erase(bottomCxt);
                         ruler.moveTo(locArray[i][0] + sign * locArray[i][2], locArray[i][1] + sign * locArray[i][3]);
                         ruler.angle = locArray[i][4];
@@ -743,9 +772,8 @@ function draw(ruler, drawingInterval, callback) {
 function integrate(f, a, b, n) {
     var step = (b - a) / n;
     var sum = f(a);
-    for (var i = 1; i < n - 1; i++) {
+    for (var i = 1; i < n - 1; i++)
         sum += 2 * f(a + i * step);
-    }
     sum += f(b);
     sum *= 0.5 * step;
     return sum;
