@@ -58,16 +58,22 @@ var cutPoints = [];
 window.onload = function (ev) {
     parseConfigJSON(localStorage.getItem('cache'));
 
-    window.onchange = function (ev) {
+    window.onchange = function (e) {
         saveConfigToBrowser();
     };
 
+    // parameters that determine the loci. Recalculation of loci is required if they're changed
     var effectors = [xParam, yParam, t1Param, t2Param, dxParam, dyParam, scaleParam, circleParam, drawingStepParam];
-    for (var i in effectors)
-        effectors[i].onchange = function () {
-            locArray = [];
-            disableDrawing();
-        };
+    for (var i in effectors) {
+        (function (i, existingOnchangeHandler) {
+            effectors[i].onchange = function (e) {
+                if (typeof existingOnchangeHandler === 'function')
+                    existingOnchangeHandler(e);
+                locArray = [];
+                disableDrawing();
+            };
+        })(i, effectors[i].onchange);
+    }
 };
 
 function disableDrawing() {
@@ -186,13 +192,13 @@ function stopDrawing() {
     currentJobs = [];
 }
 
-function adjustDotDistanceCap(input) {
-    // var newCap = +input.value;
-    // // var oldCap = +dotDistanceMaxParam.max;
-    // dotDistanceMaxParam.max = newCap;
-    // var oldValue = +dotDistanceMaxParam.value;
-    // if (oldValue > newCap)
-    //     dotDistanceMaxParam.value = newCap;
+function adjustDotDistanceCap() {
+    var newCap = (+circleParam.value) * (+scaleParam.value);
+    // var oldCap = +dotDistanceMaxParam.max;
+    dotDistanceMaxParam.max = newCap;
+    var oldValue = +dotDistanceMaxParam.value;
+    if (oldValue > newCap)
+        dotDistanceMaxParam.value = newCap;
 }
 
 function saveConfigToBrowser() {
@@ -201,11 +207,10 @@ function saveConfigToBrowser() {
 
 function getConfigJSON() {
     var isLocValid = locArray.length > 0 && locArray[0].length === 6;
-    var cutPointSigns = {};
+    var cutPointSigns = new Array(cutPoints.length);
     if (isLocValid) {
         for (var i = 0; i < cutPoints.length; i++)
-            cutPointSigns[cutPoints[i]] = getSign(document.getElementById('c' + i))
-        //cutPointSigns[t2Param.value] = getSign(document.getElementById('c' + cutPoints.length));
+            cutPointSigns[i] = getSign(document.getElementById('c' + i))
     }
     var config = {
         circleRadius: +circleParam.value,
@@ -250,6 +255,7 @@ function getConfigJSON() {
                 return +(v.toFixed(3))
             })
         }) : undefined,
+        cutPoints: cutPoints,
         cutPointSigns: isLocValid ? cutPointSigns : undefined
     };
     return JSON.stringify(config);
@@ -309,17 +315,16 @@ function parseConfigJSON(json) {
 
         if (obj.locArray !== undefined) {
             locArray = obj.locArray;
-            cutPoints = [];
+            cutPoints = obj.cutPoints;
             var g = document.getElementById('sign-adjust');
             g.innerHTML = '';
             var counter = 0;
-            for (var i in obj.cutPointSigns) {
-                cutPoints.push(+i);
+            for (var i = 0; i < cutPoints.length; i++) {
                 var e = document.createElement('button');
                 e.id = 'c' + counter;
                 e.type = 'button';
                 e.className = 'btn btn-secondary btn-sm';
-                e.innerHTML = (+i).toFixed(2) + (obj.cutPointSigns[i] == 1 ? '+' : '-');
+                e.innerHTML = cutPoints[i].toFixed(2) + (obj.cutPointSigns[i] === 1 ? '+' : '-');
                 g.appendChild(e);
 
                 e.onclick = function (ev) {
@@ -331,7 +336,7 @@ function parseConfigJSON(json) {
                         ev.target.innerHTML = ih.substring(0, ih.length - 1) + '+';
                     saveConfigToBrowser();
                 };
-                counter ++;
+                counter++;
             }
             var topCxt = topCanvas.getContext('2d');
             var bottomCxt = bottomCanvas.getContext('2d');
@@ -653,16 +658,12 @@ function clearTop() {
     var topCxt = topCanvas.getContext('2d');
     topCanvas.height++;
     topCanvas.height--;
-    //topCxt.setTransform(1, 0, 0, 1, 0, 0);
-    //topCxt.clearRect(0, 0, topCanvas.width, topCanvas.height);
 }
 
 function clearBottom() {
     var bottomCxt = bottomCanvas.getContext('2d');
     bottomCanvas.height++;
     bottomCanvas.height--;
-    //bottomCxt.setTransform(1, 0, 0, 1, 0, 0);
-    //bottomCxt.clearRect(0, 0, bottomCanvas.width, bottomCanvas.height);
 }
 
 function clearFunc() {

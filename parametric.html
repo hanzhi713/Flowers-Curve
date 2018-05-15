@@ -270,7 +270,7 @@
                         <label for="dy">dy: </label>
                         <input type="number" id="dy" style="width: 50px" value="0" step="1"/>
                         <label for="scale">s: </label>
-                        <input type="number" id="scale" style="width: 50px" value="1" step="0.1"/>
+                        <input type="number" id="scale" style="width: 50px" value="1" step="0.1" onchange="adjustDotDistanceCap(this)"/>
                     </td>
                 </tr>
                 <tr>
@@ -313,8 +313,8 @@
                         </div>
                     </td>
                     <td>
-                        <input type="number" id="circleRadius" style="width: 50px" value="10" step="0.01" max="600"
-                               min="10" onclick="adjustDotDistanceCap(this)">
+                        <input type="number" id="circleRadius" style="width: 60px" value="10" step="0.01" max="600"
+                               min="0.01" onchange="adjustDotDistanceCap(this)">
                     </td>
                 </tr>
                 <tr>
