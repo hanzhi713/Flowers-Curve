@@ -256,7 +256,7 @@
                     <td><input type="checkbox" id="showIC" class="checkbox"/></td>
                 </tr>
                 <tr>
-                    <td><label for="showSk" title="lines connecting the center of the inner circle and the dots">Show
+                    <td><label for="showSk" data-toggle="tooltip" title="lines connecting the center of the inner circle and the dots">Show
                         skeleton</label></td>
                     <td><input type="checkbox" id="showSk" class="checkbox"/></td>
                 </tr>
@@ -267,7 +267,7 @@
                 <tr>
                     <td>
                         <label for="step"
-                               title="A number in radians defining the interval for drawing the inner circle and the dots">
+                               data-toggle="tooltip" title="A number in radians defining the interval for drawing the inner circle and the dots">
                             Drawing step</label>
                     </td>
                     <td>
@@ -277,7 +277,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="delay" title="Delay between each drawing step, in milliseconds">
+                        <label for="delay" data-toggle="tooltip" title="Delay between each drawing step, in milliseconds">
                             Drawing delay
                         </label>
                     </td>
@@ -287,7 +287,7 @@
                 </tr>
                 <tr>
                     <td>
-                        <label for="ratio" title="A decimal out of one defining the completeness">
+                        <label for="ratio" data-toggle="tooltip" title="A decimal out of one defining the completeness">
                             Completeness
                         </label>
                     </td>
@@ -369,7 +369,7 @@
                                             <tr>
                                                 <th>
                                                     <label for="f-interval"
-                                                           title="Indicates how frequently should frames be taken. 40 means 1 frame per 40 drawing steps">
+                                                           data-toggle="tooltip" title="Indicates how frequently should frames be taken. 40 means 1 frame per 40 drawing steps">
                                                         Frame interval
                                                     </label>
                                                 </th>
@@ -381,7 +381,7 @@
                                             <tr>
                                                 <th>
                                                     <label for="f-delay"
-                                                           title="A number in milliseconds that indicates how long a single frame should stay">
+                                                           data-toggle="tooltip" title="A number in milliseconds that indicates how long a single frame should stay">
                                                         Frame delay
                                                     </label>
                                                 </th>
@@ -402,7 +402,7 @@
                                             </tr>
                                             <tr>
                                                 <th><label for="f-quality"
-                                                           title="The lower the number, the better the GIF quality will be">Quality</label>
+                                                           data-toggle="tooltip" title="The lower the number, the better the GIF quality will be">Quality</label>
                                                 </th>
                                                 <td><input type="number" id="f-quality" style="width: 60px" value="10"
                                                            step="1" max="20" min="1">
@@ -411,7 +411,7 @@
                                             <tr>
                                                 <th>
                                                     <label for="f-lastdelay"
-                                                           title="A number in milliseconds that defines how long should the last frame stay">
+                                                           data-toggle="tooltip" title="A number in milliseconds that defines how long should the last frame stay">
                                                         Last frame delay
                                                     </label>
                                                 </th>
