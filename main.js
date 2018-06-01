@@ -84,12 +84,22 @@ function randInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
 
+function randomColor() {
+    var R = randInt(0, 255);
+    R = R < 16 ? '0' + R.toString(16) : R.toString(16);
+    var G = randInt(0, 255);
+    G = G < 16 ? '0' + G.toString(16) : G.toString(16);
+    var B = randInt(0, 255);
+    B = B < 16 ? '0' + B.toString(16) : B.toString(16);
+    return '#' + R + G + B;
+}
+
 function randomDot() {
     // var dotDistCap = +innerCircleParam.value;
     var randDotDistMax = +dotDistanceMaxParam.value;
 
     var dotSize = randInt(+dotSizeMinParam.value, +dotSizeMaxParam.value);
-    var dotColor = '#' + (Math.floor(Math.random() * 256 * 256 * 256)).toString(16);
+    var dotColor = randomColor();
     var dotDist = randInt(+dotDistanceMinParam.value, randDotDistMax); //> dotDistCap ? dotDistCap : randDotDistMax);
     var dotRot = randInt(+dotRotMinParam.value, +dotRotMaxParam.value);
     addDotHelper((new Date()).valueOf().toString(), dotSize, dotColor, dotDist, dotRot);
